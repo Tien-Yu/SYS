@@ -47,7 +47,7 @@
             }
             p.title {
                 font-size: 32px;
-                color: #FFFFFF;
+                color: white;
                 text-align: center;
                 font-weight: 500px;
                 margin-top: 30px;
@@ -61,7 +61,7 @@
                 display: none;
                 overflow: scroll;
             }
-            .nonConformanceBtn, .conformanceBtn {
+            #nonConformanceBtn, #conformanceBtn {
                 font-size: 14px;
                 background-color: transparent;
                 border-radius: 5px;
@@ -77,30 +77,25 @@
                 color: white;
                 background-color: #f3991e;
             }
-            /*#submitBtn:hover {
-                cursor: pointer;
-                background: #fc893c;
-            }*/
-            #submitBtn:active, #submitBtn:hover {
+            #submitBtn:hover {
                 cursor: pointer;
                 color: white;
                 background-color: #f1c40f;
                 border-color: #f1c40f;
+            }
+            #submitBtn:focus {
                 outline:0;
             }
-            #submitBtn:active, #submitBtn:focus {
-                outline:0;
-            }
-            .nonConformanceBtn:hover, .conformanceBtn:hover {
+            #nonConformanceBtn:hover, #conformanceBtn:hover {
                 cursor: pointer;
                 background-color: #f3991e;
                 color: white;
-                border: 1px solid #ffffff;
+                border: 1px solid white;
             }
-            .nonConformanceBtn:focus, .conformanceBtn:focus {
+            #nonConformanceBtn:focus, #conformanceBtn:focus {
                 outline:0;
             }
-            .showSelectedNon, .showSelected {
+            #showSelectedNon, #showSelected {
                 display: block;
                 border: 0;
                 background-color: transparent;
@@ -128,7 +123,7 @@
                 } 
             }
             .nonConformance, .conformance {
-                white-space: nowrap;
+                white-space: nowrap; /* to ensure checkbox and text are in the same line */
             }
             #selectAllLabel {
                 display: block;
@@ -139,7 +134,6 @@
         <p class="title">Serve Yourself</p>
         <form id="container" action="/" method="post">
             <div class="select">
-                <!-- <label for="say">What greeting do you want to say?</label> -->
                 <p>Simulation type</p>
                 <select name="sim">
                     <option value="cu_sim"> CU-sim </option>
@@ -164,26 +158,26 @@
             </div>
             <div class="check">
                 <p>Non-conformance</p>
-                <button class="nonConformanceBtn" type="button" value="select">Select</button>
+                <button id="nonConformanceBtn" type="button" value="select">Select</button>
                 <div id="nonConformanceDialog" title="Non-conformance">
                     <p>Please select options you need. Check "<b>Select all</b>" to check all the options. Press <b>ctrl+f</b> to find options you need.</p>
                     <label id="selectAllLabel"><input type="checkbox" id="selectAllNonId" name="selectAllNon" value=""><b>Select all</b></label>
                     <table id="non_options1"></table>
                     <table id="non_options2"></table>
                 </div>
-                <textarea class="showSelectedNon" name="showSelectedNon" readonly></textarea>
+                <textarea id="showSelectedNon" name="showSelectedNon" readonly></textarea>
                 
             </div>
             <div class="last check">
                 <p>Conformance</p>
-                <button class="conformanceBtn" type="button" value="select">Select</button>
+                <button id="conformanceBtn" type="button" value="select">Select</button>
                 <div id="conformanceDialog" title="Conformance">
                     <p>Please select options you need. Check "<b>Select all</b>" to check all the options. Press <b>ctrl+f</b> to find options you need.</p>
                     <label id="selectAllLabel"><input type="checkbox" id="selectAllId" name="selectAll" value=""><b>Select all</b></label>
                     <table id="options1"></table>
                     <table id="options2"></table>
                 </div>
-                <textarea class="showSelected" name="showSelected" readonly></textarea>
+                <textarea id="showSelected" name="showSelected" readonly></textarea>
             </div>
             <div class="submit">
                 <button id="submitBtn"> Start </button>
@@ -193,6 +187,7 @@
         <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
         <script>
+            // prevent being directed to new page
             $('#container').on('submit', function(event) {
                 event.preventDefault();
                 $.ajax({
@@ -200,25 +195,27 @@
                     type: "POST",
                     data: $(this).serialize(),
                     success: function (data) {
+                        // TODO: create a space for showing server message rather than alert.
                         alert(data);
                     },
                     error: function (jXHR, textStatus, errorThrown) {
                         alert(errorThrown);
                     }
                 });
-            });            
+            });
 
+            // List options in dialog
             listOptions("data/group_non_conformance.json", "non_options", "nonConformance", "selectAllNonId");
             listOptions("data/group_conformance.json", "options", "conformance", "selectAllId");
 
+            // "Select all" buttons in two dialogs
             $("#selectAllNonId").change(function() {
                if($("#selectAllNonId").prop("checked")) {
-                    $("input[name='nonConformance']").prop("checked", true);
+                    $("input[name='nonConformance']").prop("checked", true); // select all
                } else {
-                    $("input[name='nonConformance']").prop("checked", false);          
+                    $("input[name='nonConformance']").prop("checked", false); // unselect all       
                }
             });
-
             $("#selectAllId").change(function() {
                if($("#selectAllId").prop("checked")) {
                     $("input[name='conformance']").prop("checked", true);
@@ -227,14 +224,15 @@
                }
             });
 
-            $(".nonConformanceBtn").click(function (e) {
-                initializeDialog("#nonConformanceDialog", "nonConformance", ".showSelectedNon");
-                
+            // Open dialog
+            $("#nonConformanceBtn").click(function (e) {
+                initializeDialog("#nonConformanceDialog", "nonConformance", "#showSelectedNon");  
             });
-            $(".conformanceBtn").click(function (e) {
-                initializeDialog("#conformanceDialog","conformance", ".showSelected");
+            $("#conformanceBtn").click(function (e) {
+                initializeDialog("#conformanceDialog","conformance", "#showSelected");
             });
-            function initializeDialog(dialogId, checkboxName, showAreaClass) {
+
+            function initializeDialog(dialogId, checkboxName, showAreaId) {
                 $( dialogId ).dialog({
                     width: "auto",
                     maxWidth: 950,
@@ -242,12 +240,15 @@
                     fluid: true, //new option
                     buttons: {
                         "Ok": function() {
+                            // show selected items in textarea
                             var str="";
                             var checked = document.querySelectorAll("input[name='"+checkboxName+"']:checked");
                             for (var i = 0; i < checked.length; i++) {
                                 str += (i == checked.length-1) ? checked[i].value : (checked[i].value + ", ");
                             }
-                            $(showAreaClass).val(str);
+                            $(showAreaId).val(str);
+
+                            // close dialog
                             $(this).dialog("close");
                         },
                         "Cancel": function() {
@@ -255,15 +256,19 @@
                         }
                     },
                     position: {
-                        at: "center center-1%"
-                   }
+                        at: "center center"
+                    }
                 });
             }
+
             function listOptions(file, id, name, selectAll) {
                 var xmlhttp = new XMLHttpRequest();
+                xmlhttp.open("GET", file, true);
+                xmlhttp.send();
                 xmlhttp.onreadystatechange = function() {
                     if (this.readyState == 4 && this.status == 200) {
                         var myObj = JSON.parse(this.responseText);
+                        // Insert elements to tables. Elements order: [1 4; 2 5; 3 6;]
                         for (var k=0; k<myObj.length; k++){
                             if(k < myObj.length/2) {
                                 var table = document.getElementById(id+"1");
@@ -278,18 +283,19 @@
                             cell.innerHTML = "<label><input type='checkbox' class='" + name + "' name='" + name + "' value='" + myObj[k] + "'/>" + myObj[k] + "</label>";
                             
                         }
+                        // When "Select all" is checked, if any of options is changed to unckecked, unchecked "Select all".
                         $("input:checkbox[name='" + name + "']").change(function() {
-                            $("#"+selectAll).prop("checked", true);
-                            $("input:checkbox[name='" + name + "']").each(function() {  
-                                if($(this).prop("checked")==false) {  
-                                    $("#"+selectAll).removeAttr("checked");
-                                }
-                            });  
+                            if ($("#"+selectAll).prop("checked") == true) {
+                                $("input:checkbox[name='" + name + "']").each(function() {  
+                                    if($(this).prop("checked") == false) {  
+                                        $("#"+selectAll).removeAttr("checked");
+                                        return false;
+                                    }
+                                }); 
+                            }
                         });
                     }
-                };
-                xmlhttp.open("GET", file, true);
-                xmlhttp.send();
+                }; 
             }
             
         </script>
