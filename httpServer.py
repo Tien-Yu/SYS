@@ -31,7 +31,13 @@ class requestHandler(BaseHTTPRequestHandler):
             self.end_headers()
             with open("img/bg2.jpg", "rb") as bg:
                 self.wfile.write(bg.read())
-        elif self.path.startswith("/js/jquery-ui-1.12.1/"):
+        elif self.path == "/css/sys.css":
+            self.send_response(200)
+            self.send_header('Content-type','text/css')
+            self.end_headers()
+            with open("css/sys.css", "r") as css:
+                self.wfile.write(css.read())
+        elif self.path.startswith("/js/"):
         # elif self.path == "/js/jquery-ui-1.12.1/jquery-ui.css":
             self.send_response(200)
             self.send_header('Content-type','')
