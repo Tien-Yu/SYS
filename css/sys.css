@@ -21,6 +21,13 @@ body {
     }
 }
 
+@media only screen and (max-height: 1000px) {
+    #container {
+        padding-top: 35px;
+        padding-bottom: 35px;
+    }
+}
+
 #container div {
     border-bottom: 1px solid #AAAAAA;
     margin-bottom: 10px;
