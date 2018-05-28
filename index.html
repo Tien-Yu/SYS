@@ -1,0 +1,297 @@
+<html>
+    <head>
+        <title>Serve Yorself (SYS)</title>
+        <link rel="stylesheet" href="./js/jquery-ui-1.12.1/jquery-ui.css">
+        <style>
+            body {
+                background: url('./img/bg2.jpg');
+                background-size: cover;
+                background-position: center;
+            }
+            #container {
+                text-align: left;
+                width: 530px;
+                margin: 0 auto 50px;
+                border-radius:10px;
+                padding: 50px;
+                background-color: rgba(255,255,255,0.9);
+            }
+            @media only screen and (max-width: 800px) {
+                #container {
+                    width: 430px;
+                    padding-left: 35px;
+                    padding-right: 35px;
+                }
+            }
+            #container div {
+                border-bottom: 1px solid #AAAAAA;
+                margin-bottom: 10px;
+            }
+            #container div.select {
+                height: 100px;
+            }
+            #container div.check {
+                height: 160px;
+            }
+            #container div.submit {
+                text-align: center;
+                border: 0;
+                height: auto;
+                margin-bottom: 0;
+            }
+            #container div.last {
+                border: 0;
+            }
+            p {
+                font-size: 17px;
+            }
+            p.title {
+                font-size: 32px;
+                color: #FFFFFF;
+                text-align: center;
+                font-weight: 500px;
+                margin-top: 30px;
+            }
+            select {
+                height: 30px;
+                width: 180px;
+                font-size: 14px;
+            }
+            #nonConformanceDialog, #conformanceDialog {
+                display: none;
+                overflow: scroll;
+            }
+            .nonConformanceBtn, .conformanceBtn {
+                font-size: 14px;
+                background-color: transparent;
+                border-radius: 5px;
+                border: 1px solid #f3991e;
+                width: 70px;
+                margin-bottom: 10px;
+                color: #f3991e;
+            }
+            #submitBtn {
+                border-radius: 5px;
+                font-size: 16px;
+                padding: 5px 20px;
+                color: white;
+                background-color: #f3991e;
+            }
+            /*#submitBtn:hover {
+                cursor: pointer;
+                background: #fc893c;
+            }*/
+            #submitBtn:active, #submitBtn:hover {
+                cursor: pointer;
+                color: white;
+                background-color: #f1c40f;
+                border-color: #f1c40f;
+                outline:0;
+            }
+            #submitBtn:active, #submitBtn:focus {
+                outline:0;
+            }
+            .nonConformanceBtn:hover, .conformanceBtn:hover {
+                cursor: pointer;
+                background-color: #f3991e;
+                color: white;
+                border: 1px solid #ffffff;
+            }
+            .nonConformanceBtn:focus, .conformanceBtn:focus {
+                outline:0;
+            }
+            .showSelectedNon, .showSelected {
+                display: block;
+                border: 0;
+                background-color: transparent;
+                width: 100%;
+                font-size: 14px;
+                height: 60px;
+            }
+            #selectAllNonId, #selectAllId {
+                margin-bottom: 20px;
+            }
+            textarea {
+                overflow-y : auto; /* IE */
+                resize : none; /* Firefox, Chrome */
+            }
+            textarea:focus {
+                outline : 0; /* Chrome */
+            }
+            #non_options1, #non_options2, #options1, #options2 {
+                display: inline-block;
+                vertical-align: top;
+            }
+            @media only screen and (max-width: 1000px) {
+                #non_options1, #non_options2, #options1, #options2 {
+                    display: block;
+                } 
+            }
+            .nonConformance, .conformance {
+                white-space: nowrap;
+            }
+            #selectAllLabel {
+                display: block;
+            }
+        </style>
+    </head>
+    <body>
+        <p class="title">Serve Yourself</p>
+        <form id="container" action="/" method="post">
+            <div class="select">
+                <!-- <label for="say">What greeting do you want to say?</label> -->
+                <p>Simulation type</p>
+                <select name="sim">
+                    <option value="cu_sim"> CU-sim </option>
+                    <option value="global_sim"> Global-sim</option>
+                    <option value="d_sim"> D-sim</option>
+                    <option value="fpga"> FPGA </option>
+                </select>
+            </div>
+            <div class="select">
+                <p>Number of CUs</p>
+                <select name="cu_num">
+                    <option value="single"> single </option>
+                    <option value="multi"> multi</option>
+                </select>
+            </div>
+            <div class="select">
+                <p>Memory type</p>
+                <select name="mem">
+                    <option value="gm"> in/out DRAM </option>
+                    <option value="fgm"> in/out GSM </option>
+                </select>
+            </div>
+            <div class="check">
+                <p>Non-conformance</p>
+                <button class="nonConformanceBtn" type="button" value="select">Select</button>
+                <div id="nonConformanceDialog" title="Non-conformance">
+                    <p>Please select options you need. Check "<b>Select all</b>" to check all the options. Press <b>ctrl+f</b> to find options you need.</p>
+                    <label id="selectAllLabel"><input type="checkbox" id="selectAllNonId" name="selectAllNon" value=""><b>Select all</b></label>
+                    <table id="non_options1"></table>
+                    <table id="non_options2"></table>
+                </div>
+                <textarea class="showSelectedNon" name="showSelectedNon" readonly></textarea>
+                
+            </div>
+            <div class="last check">
+                <p>Conformance</p>
+                <button class="conformanceBtn" type="button" value="select">Select</button>
+                <div id="conformanceDialog" title="Conformance">
+                    <p>Please select options you need. Check "<b>Select all</b>" to check all the options. Press <b>ctrl+f</b> to find options you need.</p>
+                    <label id="selectAllLabel"><input type="checkbox" id="selectAllId" name="selectAll" value=""><b>Select all</b></label>
+                    <table id="options1"></table>
+                    <table id="options2"></table>
+                </div>
+                <textarea class="showSelected" name="showSelected" readonly></textarea>
+            </div>
+            <div class="submit">
+                <button id="submitBtn"> Start </button>
+            </div>
+        </form>
+
+        <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <script>
+            $('#container').on('submit', function(event) {
+                event.preventDefault();
+                $.ajax({
+                    url : $(this).attr('action') || window.location.pathname,
+                    type: "POST",
+                    data: $(this).serialize(),
+                    success: function (data) {
+                        alert(data);
+                    },
+                    error: function (jXHR, textStatus, errorThrown) {
+                        alert(errorThrown);
+                    }
+                });
+            });            
+
+            listOptions("data/group_non_conformance.json", "non_options", "nonConformance", "selectAllNonId");
+            listOptions("data/group_conformance.json", "options", "conformance", "selectAllId");
+
+            $("#selectAllNonId").change(function() {
+               if($("#selectAllNonId").prop("checked")) {
+                    $("input[name='nonConformance']").prop("checked", true);
+               } else {
+                    $("input[name='nonConformance']").prop("checked", false);          
+               }
+            });
+
+            $("#selectAllId").change(function() {
+               if($("#selectAllId").prop("checked")) {
+                    $("input[name='conformance']").prop("checked", true);
+               } else {
+                    $("input[name='conformance']").prop("checked", false);          
+               }
+            });
+
+            $(".nonConformanceBtn").click(function (e) {
+                initializeDialog("#nonConformanceDialog", "nonConformance", ".showSelectedNon");
+                
+            });
+            $(".conformanceBtn").click(function (e) {
+                initializeDialog("#conformanceDialog","conformance", ".showSelected");
+            });
+            function initializeDialog(dialogId, checkboxName, showAreaClass) {
+                $( dialogId ).dialog({
+                    width: "auto",
+                    maxWidth: 950,
+                    height: 700,
+                    fluid: true, //new option
+                    buttons: {
+                        "Ok": function() {
+                            var str="";
+                            var checked = document.querySelectorAll("input[name='"+checkboxName+"']:checked");
+                            for (var i = 0; i < checked.length; i++) {
+                                str += (i == checked.length-1) ? checked[i].value : (checked[i].value + ", ");
+                            }
+                            $(showAreaClass).val(str);
+                            $(this).dialog("close");
+                        },
+                        "Cancel": function() {
+                            $(this).dialog("close");
+                        }
+                    },
+                    position: {
+                        at: "center center-1%"
+                   }
+                });
+            }
+            function listOptions(file, id, name, selectAll) {
+                var xmlhttp = new XMLHttpRequest();
+                xmlhttp.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        var myObj = JSON.parse(this.responseText);
+                        for (var k=0; k<myObj.length; k++){
+                            if(k < myObj.length/2) {
+                                var table = document.getElementById(id+"1");
+                                var row = table.insertRow(k);
+                                var cell = row.insertCell(0);
+                            }
+                            else {
+                                var table = document.getElementById(id+"2");
+                                var row = table.insertRow(k-Math.floor(myObj.length/2)-1);
+                                var cell = row.insertCell(0);
+                            }
+                            cell.innerHTML = "<label><input type='checkbox' class='" + name + "' name='" + name + "' value='" + myObj[k] + "'/>" + myObj[k] + "</label>";
+                            
+                        }
+                        $("input:checkbox[name='" + name + "']").change(function() {
+                            $("#"+selectAll).prop("checked", true);
+                            $("input:checkbox[name='" + name + "']").each(function() {  
+                                if($(this).prop("checked")==false) {  
+                                    $("#"+selectAll).removeAttr("checked");
+                                }
+                            });  
+                        });
+                    }
+                };
+                xmlhttp.open("GET", file, true);
+                xmlhttp.send();
+            }
+            
+        </script>
+    </body>
+</html>
