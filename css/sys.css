@@ -159,6 +159,12 @@ textarea:focus {
     display: block;
 }
 
+footer {
+    text-align: center;
+    color: white;
+    font-size: 13px;
+}
+/* For jquery UI dialog */
 .ui-dialog-titlebar {
     background-color: #ffdf98;
 }
