@@ -165,10 +165,18 @@ footer {
     font-size: 13px;
 }
 /* For jquery UI dialog */
-.ui-dialog-titlebar {
-    background-color: #ffdf98;
+.ui-dialog {
+    border-radius: 10px;
 }
 
+.ui-dialog-titlebar {
+    background-color: #ffdf98;
+    border-radius: 8px 8px 0 0;
+}
+
+.ui-widget-header {
+    border: 2px solid #ffdf98;
+}
 .ui-button {
     background-color: #ffdf98;
     border: 1px solid #fdbd67;
