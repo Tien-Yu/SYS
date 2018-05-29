@@ -5,7 +5,8 @@
         <link rel="stylesheet" type="text/css" href="./css/sys.css">
     </head>
     <body>
-        <p class="title">Serve Yourself</p>
+        <div id="title">Serve Yourself</div>
+        <p id="message" name="message">Welcome! You have no jobs in progress.</p>
         <form id="container" action="/" method="post">
             <div class="select">
                 <p>Simulation type</p>
@@ -28,6 +29,13 @@
                 <select name="mem">
                     <option value="gm"> in/out DRAM </option>
                     <option value="fgm"> in/out GSM </option>
+                </select>
+            </div>
+            <div class="select">
+                <p>Probe</p>
+                <select name="probe">
+                    <option value="On"> On </option>
+                    <option value="Off"> Off </option>
                 </select>
             </div>
             <div class="check">
