@@ -17,18 +17,11 @@ body {
     background-color: rgba(255,255,255,0.9);
 }
 
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1000px) {
     #container {
         width: 430px;
         padding-left: 35px;
         padding-right: 35px;
-    }
-}
-
-@media only screen and (max-height: 1000px) {
-    #container {
-        padding-top: 35px;
-        padding-bottom: 35px;
     }
 }
 
@@ -43,6 +36,19 @@ body {
 
 #container div.check {
     height: 160px;
+}
+
+@media only screen and (max-height: 1150px) {
+    #container {
+        padding-top: 35px;
+        padding-bottom: 35px;
+    }
+    #container div.select {
+        height: 85px;
+    }
+    #container div.check {
+        height: 145px;
+    }
 }
 
 #container div.submit {
@@ -143,12 +149,6 @@ textarea:focus {
 #non_options1, #non_options2, #options1, #options2 {
     display: inline-block;
     vertical-align: top;
-}
-
-@media only screen and (max-width: 1000px) {
-    #non_options1, #non_options2, #options1, #options2 {
-        display: block;
-    } 
 }
 
 .nonConformance, .conformance {
