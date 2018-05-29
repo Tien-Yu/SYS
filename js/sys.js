@@ -46,7 +46,6 @@ $("#conformanceBtn").click(function (e) {
 function initializeDialog(dialogId, checkboxName, showAreaId) {
     $( dialogId ).dialog({
         width: "auto",
-        maxWidth: 950,
         height: 700,
         fluid: true, //new option
         buttons: {
