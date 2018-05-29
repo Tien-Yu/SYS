@@ -177,17 +177,31 @@ footer {
 .ui-widget-header {
     border: 2px solid #ffdf98;
 }
+
 .ui-button {
-    background-color: #ffdf98;
-    border: 1px solid #fdbd67;
-    color: #985904;
+    background-color: #ffdf98 !important;
+    border: 1px solid #fdbd67 !important;
+    color: #985904 !important;
 }
+
+.ui-button:hover {
+    background-color: #f1c40f !important;
+    border-color: #f1c40f !important;
+    color: white !important;
+}
+
+.ui-button:focus {
+    outline:0;
+}
+
 .ui-dialog-title {
     color: #985904;
 }
+
 .ui-dialog-titlebar-close {
-    border: 0;
+    border: 0 !important;
 }
+
 .ui-widget-content {
     border: 1px solid #f39f2e;
 }
