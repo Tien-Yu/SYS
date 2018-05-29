@@ -4,7 +4,7 @@ body {
     background-position: center;
 }
 #message {
-    color: #1b6526;
+    color: #624b0a;
     font-size: 16px;
     text-align: center;
 }
@@ -64,6 +64,7 @@ body {
 
 p {
     font-size: 17px;
+    font-family: "HelveticaNeue","Helvetica","Arial";
 }
 
 div#title {
@@ -71,6 +72,7 @@ div#title {
     color: white;
     text-align: center;
     margin-top: 30px;
+    font-family: "HelveticaNeue","Helvetica","Arial";
 }
 
 select {
@@ -100,13 +102,14 @@ select {
     padding: 5px 20px;
     color: white;
     background-color: #f3991e;
+    border: 1px solid #f3991e;
 }
 
 #submitBtn:hover {
     cursor: pointer;
     color: white;
     background-color: #f1c40f;
-    border-color: #f1c40f;
+    border: 1px solid #f1c40f;
 }
 
 #submitBtn:focus {
