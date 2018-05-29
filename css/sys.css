@@ -3,7 +3,11 @@ body {
     background-size: cover;
     background-position: center;
 }
-
+#message {
+    color: #1b6526;
+    font-size: 16px;
+    text-align: center;
+}
 #container {
     text-align: left;
     width: 530px;
@@ -56,11 +60,10 @@ p {
     font-size: 17px;
 }
 
-p.title {
+div#title {
     font-size: 32px;
     color: white;
     text-align: center;
-    font-weight: 500px;
     margin-top: 30px;
 }
 
@@ -154,4 +157,23 @@ textarea:focus {
 
 #selectAllLabel {
     display: block;
+}
+
+.ui-dialog-titlebar {
+    background-color: #ffdf98;
+}
+
+.ui-button {
+    background-color: #ffdf98;
+    border: 1px solid #fdbd67;
+    color: #985904;
+}
+.ui-dialog-title {
+    color: #985904;
+}
+.ui-dialog-titlebar-close {
+    border: 0;
+}
+.ui-widget-content {
+    border: 1px solid #f39f2e;
 }
