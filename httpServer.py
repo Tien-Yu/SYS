@@ -3,6 +3,9 @@ import sys
 import os
 import cgi
 import time
+import util
+import ftplib
+import re
 from http.server import BaseHTTPRequestHandler
 from http.server import HTTPServer
 from subprocess import Popen, PIPE
@@ -19,13 +22,15 @@ def makeHandlerFromArguments(myServer):
                 self.path = "index.html"
             print("GET path {}".format(self.path))
             print("clientIP : {}".format(self.client_address))
+            clientIP = self.client_address[0]
 
             if self.path == "index.html":
                 try:
-                    file = open(os.curdir + os.sep + self.path)
+                    self.sysServer.modifyHtmlMessage(self.sysServer.makeWelcomeMessage(clientIP))
                     self.send_response(200)
                     self.send_header('Content-type','text/html')
                     self.end_headers()
+                    file = open(os.curdir + os.sep + self.path)
                     self.wfile.write(file.read().encode("utf-8"))
                     file.close()
                 except IOError as ioe:
@@ -84,49 +89,53 @@ def makeHandlerFromArguments(myServer):
             value_probe = form.getvalue("probe")
             value_non_conformance = form.getvalue("showSelectedNon")
             value_conformance = form.getvalue("showSelected")
-            value_pattern_list =  value_non_conformance.split(", ")
+            # value_pattern_list = value_non_conformance.split(", ")
+            value_pattern_list = []
             value_pattern_type = ""
             if value_non_conformance is not None and value_conformance is not None:
+                value_pattern_list = value_non_conformance.split(", ") + value_conformance.split(", ")
                 value_pattern_type = "mixed"
             elif value_non_conformance is not None and value_conformance is None:
+                value_pattern_list = value_non_conformance.split(", ")
                 value_pattern_type = "non_conformance"
             elif value_non_conformance is None and value_conformance is not None:
+                value_pattern_list = value_conformance.split(", ")
                 value_pattern_type = "conformance"
             else:
                 value_pattern_type = "error"
+            probeCfg = True if value_probe == "On" else False
 
-            print("clientIP       : {}".format(self.client_address))
-            print("sim            : {}".format(value_sim))
-            print("cu_num         : {}".format(value_cu_num))
-            print("mem            : {}".format(value_mem))
-            print("probe          : {}".format(value_probe))
-            print("Non-Conformance: {}".format(value_non_conformance))
-            print("Conformance    : {}".format(value_conformance))
-            print("pattern list   : {}".format(value_pattern_list))
+            print(util.ColorUtil.INFO + "clientIP       : {}".format(self.client_address))
+            print(util.ColorUtil.INFO + "sim            : {}".format(value_sim))
+            print(util.ColorUtil.INFO + "cu_num         : {}".format(value_cu_num))
+            print(util.ColorUtil.INFO + "mem            : {}".format(value_mem))
+            print(util.ColorUtil.INFO + "probe          : {}".format(value_probe))
+            #print(util.ColorUtil.INFO + "Non-Conformance: {}".format(value_non_conformance))
+            #print(util.ColorUtil.INFO + "Conformance    : {}".format(value_conformance))
+            # print(util.ColorUtil.INFO + "pattern list   : {}".format(value_pattern_list))
 
             if self.path == "index.html":
-                result = False
+                clientIP = self.client_address[0]
+                result = "Default error"
+                code = 404
                 if value_pattern_type == "error":
-                    result = False
+                    result = "No patterns selected"
                     code = 404
                 else:
-                    clientIP = self.client_address[0]
                     value_cu_num = "1" if value_cu_num == "single" else "2"
-                    result = self.sysServer.createChild(value_sim, value_cu_num, value_mem, value_pattern_type, value_pattern_list, clientIP)
+                    result = self.sysServer.createChild(value_sim, value_cu_num, value_mem, probeCfg, value_pattern_type, value_pattern_list, clientIP)
                     code = 200 if result == True else 507
 
                 if result == True:
                     try:
-                        file = open(os.curdir + os.sep + self.path)
                         self.send_response(code)
                         self.send_header('Content-type','text/html')
                         self.end_headers()
-                        self.wfile.write("Request processed!".encode("utf-8"))
-                        file.close()
+                        self.wfile.write("Request processed!\nThe patterns will be in {}\n".format(self.sysServer.clientInfo[clientIP].destDir).encode("utf-8"))
                     except IOError as ioe:
                         self.send_error(404, "Incorrect path: {}".format(self.path))
                 else:
-                    self.send_response(code)
+                    self.send_response(200)
                     self.send_header('Content-type','text/html')
                     self.end_headers()
                     self.wfile.write(result.encode("utf-8"))
@@ -142,28 +151,29 @@ class SYSServer():
         self.clientInfo = dict()
         self.logfile = open("sys.log", "a")
         self.stop = False
-        self.serialNumber = 1
+        self.serialNumber = 0
 
     def start(self):
         try:
             serverThread = Thread(target=self.startServer, args=[])
             serverThread.start()
             while self.stop is False:
-                self.pollChildren()
                 time.sleep(2)
+                self.pollChildren()
+
         except KeyboardInterrupt:
-            print("Close server")
+            print("\n" + util.ColorUtil.INFO + "Close server")
             self.logfile.close()
 
     def startServer(self):
         serverAddress = ("", self.port)
         server = HTTPServer(serverAddress, self.handlerClass)
 
-        print("Started httpserver on port {}".format(self.port))
+        print(util.ColorUtil.INFO + " Started httpserver on port {}".format(self.port))
         # Wait forever for incoming http requests
         server.serve_forever()
 
-    def createChild(self, simType, cuNum, mem, patternType, patternList, clientIP):
+    def createChild(self, simType, cuNum, mem, probe, patternType, patternList, clientIP):
         regressPath = self.dispatchRegressionWorkspace()
         if regressPath == -1:
             return "All three workspaces are busy."
@@ -171,29 +181,56 @@ class SYSServer():
         if self.checkIP(clientIP, regressPath) is False:
             return "You already have a job (ID: {}) running".format(self.clientInfo[clientIP].serialID)
 
-        cmd = self.makeCommand(simType, cuNum, mem, patternType, patternList, regressPath)
-        self.syslog("Job ID: {}, Command: {}".format(self.serialNumber, cmd))
-        self.serialNumber += 1
-        # child = Popen(cmd.split(), stdout=PIPE, stderr=PIPE)
-        child = Popen(cmd.split())
-        # child = Popen(["ls"])
+        cmd = self.makeCommand(simType, cuNum, mem, probe, patternType, patternList, regressPath)
+        self.syslog("[Job {}][{}] Command: {}".format(self.serialNumber, clientIP, cmd))
+        child = Popen(cmd.split(), stdout=PIPE)
+        # child = Popen("qq ls".split(), stdout=PIPE)
+        mosesqMessage = child.stdout.readline().decode("utf-8")
+        match = re.match(r"Job <(.*)> (.*)", mosesqMessage)
+        mosesqID = match.group(1)
+
+        projectID = "10778" if simType == "d_sim" else "02168"
+        ftp = ftplib.FTP("Mtkftp1")
+        ftp.login("tingchu" + projectID, "mediatek")
+        self.clientInfo[clientIP].destDir = util.makeDestinationFullPath(ftp, simType, cuNum, patternType, self.serialNumber)
         self.clientInfo[clientIP].process = child
+        self.clientInfo[clientIP].mosesqJobID = mosesqID
+        self.serialNumber += 1
+        ftp.quit()
+        self.syslog("Destination path: {}".format(self.clientInfo[clientIP].destDir))
         return True
 
     def pollChildren(self):
-        for ip, info in self.clientInfo.items():
+        for ip in self.clientInfo.keys():
+            info = self.clientInfo[ip]
             if info.jobCount == 0:
                 continue
 
-            code = info.process.poll()
-            if code is None: # still running
-                pass
-                # msg = info.process.stdout.readline()
-                # print("Stdout from {}:".format(ip))
-                # print(msg.decode("utf-8"))
+            if info.process is not None:
+                code = info.process.poll()
+                if code is None: # still running
+                    if self.checkForceStop(info):
+                        print(util.ColorUtil.WARNING + " The job of client {} is being force stopped".format(ip))
+                        self.syslog("bkill " + info.mosesqJobID)
+                        os.system("bkill " + info.mosesqJobID)
+                        info.process.kill()
+                        info.cleanUp()
+                        print("Done")
+                    else:
+                        line = info.process.stdout.readline()
+                        while line:
+                            print(line.decode("utf-8"), end="")
+                            line = info.process.stdout.readline()
+                else:
+                    info.cleanUp()
+                    self.syslog("Done the job of client {}".format(ip))
             else:
-                self.clientInfo[ip].cleanUp()
-                print("SYS: Done the job of client {}".format(ip))
+                print("--- process is None !!!")
+
+    def checkForceStop(self, info):
+        if os.path.exists("stop{}.cfg".format(info.regressPath)):
+            return True
+        return False
 
     def checkIP(self, ip, regressPath): # Check if 'ip' can fire a job
         if ip in self.clientInfo:
@@ -213,17 +250,20 @@ class SYSServer():
             return True
         return False
 
-    def makeStatusMessage(self, ip):
+    def makeWelcomeMessage(self, ip):
+        msg = ""
         if ip in self.clientInfo:
             info = self.clientInfo[ip]
             if info.jobCount <= 0:
-                return "Welcome! You have no jobs in progress."
+                msg = "Welcome back! You have no jobs in progress. Previous pattern locations: {}".format(info.destDir)
             else:
-                return "Currently there is {} job (ID: {}) from you still running".format(info.jobCount, info.serialID)
+                msg = "Currently there is {} job (ID: {}) from you still running.".format(info.jobCount, info.serialID)
+                msg += "You will get your patterns in {}".format(info.destDir)
         else:
-            return "Welcome! There are no jobs of yours currently running."
+            msg = "Welcome! There are no jobs of yours currently running."
+        return msg
 
-    def makeCommand(self, simType, cuNum, mem, patternType, patternList, regressPath):
+    def makeCommand(self, simType, cuNum, mem, probe, patternType, patternList, regressPath):
         inputFilename = "templist" + str(self.serialNumber) + ".txt"
         if not patternList:
             inputFilename = "group_non_conformance.txt"
@@ -242,12 +282,13 @@ class SYSServer():
 
             os.chdir(curdir)
 
-        cmd = "qq time python3 genPatternFromfile.py -file {} -sim {} -cu {} -mem {} -pattern_type {} -probe -delete -upload -have_path 2 -regression_path {} -serialID {}".format(inputFilename, simType, cuNum, mem, patternType, regressPath, self.serialNumber)
+        probeCfg = "-probe" if probe is True else ""
+        cmd = "mosesq time python3 genPatternFromfile.py -file {} -sim {} -cu {} -mem {} -pattern_type {} {} -delete -upload -have_path 2 -regression_path {} -serialID {}".format(inputFilename, simType, cuNum, mem, patternType, probeCfg, regressPath, self.serialNumber)
 
         return cmd
 
     def syslog(self, message, printToScreen=True):
-        self.logfile.write(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()) + "\n")
+        self.logfile.write(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()) + " ")
         self.logfile.write(message + "\n")
         self.logfile.flush()
         if printToScreen is True:
@@ -257,24 +298,41 @@ class SYSServer():
     def dispatchRegressionWorkspace(self):
         if not os.listdir("../HAVE-Regression/out/"):    # workspace 0 is empty, available
             return 0
-        # elif not os.listdir("../have2/HAVE-Regression/out"): # workspace 1 is empty, available
-        #     return 1
-        # elif not os.listdir("../have3/HAVE-Regression/out"): # workspace 1 is empty, available
+        elif not os.listdir("../regression2/HAVE-Regression/out"): # workspace 1 is empty, available
+            return 1
+        # elif not os.listdir("../regression3/HAVE-Regression/out"): # workspace 1 is empty, available
         #     return 2
         else:
             return -1
 
+    def modifyHtmlMessage(self, newMsg):
+        keyword = "<p id=\"message\" name=\"message\">"
+        htmlfile = open("index.html", "r")
+        lines = htmlfile.readlines()
+        for idx, line in enumerate(lines):
+            if keyword in line:
+                lines[idx] = "        <p id=\"message\" name=\"message\">{}</p>\n".format(newMsg)
+        htmlfile.close()
+
+        htmlfile = open("index.html", "w")
+        htmlfile.writelines(lines)
+        htmlfile.close()
+
+
 class ClientInfo:
     def __init__(self, ip):
         self.ip = ip
+        self.destDir = ""
+        self.serialID = -1
         self.cleanUp()
 
     def cleanUp(self):
         self.jobCount = 0
-        self.serialID = -1
-        self.destDir = ""
-        self.regressPath = ""
+        # self.serialID = -1
+        # self.destDir = ""
+        self.regressPath = -1
         self.process = None
+        self.mosesqJobID = ""
 
 def main():
     if sys.argv[1:]:
