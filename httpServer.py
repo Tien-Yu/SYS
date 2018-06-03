@@ -174,6 +174,7 @@ class SYSServer():
         server.serve_forever()
 
     def createChild(self, simType, cuNum, mem, probe, patternType, patternList, clientIP):
+        return True
         regressPath = self.dispatchRegressionWorkspace()
         if regressPath == -1:
             return "All three workspaces are busy."
