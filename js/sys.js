@@ -6,14 +6,30 @@ $('#container').on('submit', function(event) {
         type: "POST",
         data: $(this).serialize(),
         success: function (data) {
-            // TODO: create a space for showing server message rather than alert.
-            alert(data);
+            $("#message").html(data); //TODO: process json
         },
         error: function (jXHR, textStatus, errorThrown) {
             alert(errorThrown);
         }
     });
 });
+
+// get message on document ready
+$( document ).ready(function() {
+    $.ajax({
+        url : "/js/message" || window.location.pathname,
+        type: "GET",
+        data: $(this).serialize(),
+        success: function (data) {
+            $("#message").html(data); //TODO: process json
+        },
+        error: function (jXHR, textStatus, errorThrown) {
+            alert(errorThrown);
+        }
+    });
+});
+
+
 
 // List options in dialog
 listOptions("data/group_non_conformance.json", "non_options", "nonConformance", "selectAllNonId");

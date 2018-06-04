@@ -26,7 +26,6 @@ def makeHandlerFromArguments(myServer):
 
             if self.path == "index.html":
                 try:
-                    self.sysServer.modifyHtmlMessage(self.sysServer.makeWelcomeMessage(clientIP))
                     self.send_response(200)
                     self.send_header('Content-type','text/html')
                     self.end_headers()
@@ -35,6 +34,11 @@ def makeHandlerFromArguments(myServer):
                     file.close()
                 except IOError as ioe:
                     self.send_error(404, "Incorrect path: {}".format(self.path))
+            elif self.path == "/js/message":
+                self.send_response(200)
+                self.send_header('Content-type','text/plain')
+                self.end_headers()
+                self.wfile.write("hihihihiihihihih".encode("utf-8"))
             elif self.path == "/img/bg2.jpg":
                 self.send_response(200)
                 self.send_header('Content-type','image/jpg')
@@ -305,20 +309,6 @@ class SYSServer():
         #     return 2
         else:
             return -1
-
-    def modifyHtmlMessage(self, newMsg):
-        keyword = "<p id=\"message\" name=\"message\">"
-        htmlfile = open("index.html", "r")
-        lines = htmlfile.readlines()
-        for idx, line in enumerate(lines):
-            if keyword in line:
-                lines[idx] = "        <p id=\"message\" name=\"message\">{}</p>\n".format(newMsg)
-        htmlfile.close()
-
-        htmlfile = open("index.html", "w")
-        htmlfile.writelines(lines)
-        htmlfile.close()
-
 
 class ClientInfo:
     def __init__(self, ip):
