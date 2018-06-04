@@ -6,6 +6,7 @@ import time
 import util
 import ftplib
 import re
+import json
 from http.server import BaseHTTPRequestHandler
 from http.server import HTTPServer
 from subprocess import Popen, PIPE
@@ -38,7 +39,7 @@ def makeHandlerFromArguments(myServer):
                 self.send_response(200)
                 self.send_header('Content-type','text/plain')
                 self.end_headers()
-                self.wfile.write("hihihihiihihihih".encode("utf-8"))
+                self.wfile.write(self.sysServer.makeWelcomeMessage(clientIP).encode("utf-8"))
             elif self.path == "/img/bg2.jpg":
                 self.send_response(200)
                 self.send_header('Content-type','image/jpg')
@@ -256,17 +257,24 @@ class SYSServer():
         return False
 
     def makeWelcomeMessage(self, ip):
-        msg = ""
+        jsonMsg = ""
+        dictMsg = dict()
         if ip in self.clientInfo:
             info = self.clientInfo[ip]
             if info.jobCount <= 0:
-                msg = "Welcome back! You have no jobs in progress. Previous pattern locations: {}".format(info.destDir)
+                dictMsg["first"] = "Welcome back! You have no jobs in progress. Previous pattern locations: "
+                dictMsg["path"] = info.destDir
             else:
-                msg = "Currently you have {} job (ID: {}) still running.".format(info.jobCount, info.serialID)
-                msg += "You will get your patterns in {}".format(info.destDir)
+                dictMsg["first"] = "Currently you have {} job (ID: ".format(info.jobCount)
+                dictMsg["idVal"] = "{}".format(info.serialID)
+                dictMsg["second"] = ") still running.".format(info.jobCount, info.serialID)
+                dictMsg["third"] = "You'll get your patterns in "
+                dictMsg["path"] = info.destDir
         else:
-            msg = "Welcome! You have no jobs currently running."
-        return msg
+            dictMsg["first"] = "Welcome! You have no jobs currently running."
+        jsonMsg = json.dumps(dictMsg)
+        print(jsonMsg)
+        return jsonMsg
 
     def makeCommand(self, simType, cuNum, mem, probe, patternType, patternList, regressPath):
         inputFilename = "templist" + str(self.serialNumber) + ".txt"
@@ -309,6 +317,20 @@ class SYSServer():
         #     return 2
         else:
             return -1
+
+    # def modifyHtmlMessage(self, newMsg):
+    #     keyword = "<p id=\"message\" name=\"message\">"
+    #     htmlfile = open("index.html", "r")
+    #     lines = htmlfile.readlines()
+    #     for idx, line in enumerate(lines):
+    #         if keyword in line:
+    #             lines[idx] = "        <p id=\"message\" name=\"message\">{}</p>\n".format(newMsg)
+    #     htmlfile.close()
+
+    #     htmlfile = open("index.html", "w")
+    #     htmlfile.writelines(lines)
+    #     htmlfile.close()
+
 
 class ClientInfo:
     def __init__(self, ip):
