@@ -5,6 +5,7 @@ $( document ).ready(function() {
         type: "GET",
         data: $(this).serialize(),
         success: function (data) {
+            // data='{"first": "qqqCurrently you have 1 job (ID: ","idVal": "4","second": ") still running.","third": "You will get your patterns in ","path": "nobackup/d_02168_t2/tingchu02168/20180601_non_conformance_single_4"}';
             var myObj = JSON.parse(data);
             var first = myObj.first ? myObj.first : "";
             var id = myObj.idVal ? ("<b>" + myObj.idVal + "</b>") : "";
@@ -31,19 +32,20 @@ $('#container').on('submit', function(event) {
         type: "POST",
         data: $(this).serialize(),
         success: function (data) {
+            // data='{"first": "qqqCurrently you have 1 job (ID: ","idVal": "4","second": ") still running.","third": "You will get your patterns in ","path": "nobackup/d_02168_t2/tingchu02168/20180601_non_conformance_single_4"}';
             var myObj = JSON.parse(data);
-            var first = myObj.first;
-            var id = "<b>" + myObj.idVal + "</b>";
-            var second = myObj.second + "</br></br>";
-            var third = myObj.third;
-            var path = "</br><b>" + myObj.path + "</b>";
+            var first = myObj.first ? myObj.first : "";
+            var id = myObj.idVal ? ("<b>" + myObj.idVal + "</b>") : "";
+            var second = myObj.second ? (myObj.second + "</br></br>") : "";
+            var third = myObj.third ? myObj.third : "";
+            var path = myObj.path ? ("</br><b>" + myObj.path + "</b>") : "";
             $("#message").html(first + id + second + third + path);
 
             // animation
             $("#message-container").css({"animation": "pulse 3s infinite"});
-            setTimeout(function(){ $("#message-container").css({"animation": "none"}); }, 3000);
+            setTimeout(function(){ $("#message-container").css({"animation": "none", "box-shadow": "none"}); }, 3000);
             $("#submitBtn").css({"animation": "pulseBtn 1.5s infinite"});
-            setTimeout(function(){ $("#submitBtn").css({"animation": "none"}); }, 1500);
+            setTimeout(function(){ $("#submitBtn").css({"animation": "none", "box-shadow": "none"}); }, 1500);
         },
         error: function (jXHR, textStatus, errorThrown) {
             alert(errorThrown);
