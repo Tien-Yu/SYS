@@ -114,6 +114,7 @@ select {
     color: white;
     background-color: #f3991e;
     border: 1px solid #f3991e;
+    margin-right: 5px;
 }
 
 #submitBtn:hover {

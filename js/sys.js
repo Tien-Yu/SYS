@@ -63,7 +63,9 @@ $("#resetBtn").click(function (e) {
     $("input[name='conformance']").prop("checked", false);
     $("#showSelectedNon").val("");
     $("#showSelected").val("");
-
+    // feedback animation
+    $(this).css({"animation": "pulseBtn 1.5s infinite"});
+    setTimeout(function(){ $("#resetBtn").css({"animation": "none", "box-shadow": "none"}); }, 1500);
 });
 
 // "Select all" buttons in two dialogs
