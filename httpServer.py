@@ -136,7 +136,7 @@ def makeHandlerFromArguments(myServer):
                         self.send_response(code)
                         self.send_header('Content-type','text/html')
                         self.end_headers()
-                        self.wfile.write("Request processed!\nThe patterns will be in {}\n".format(self.sysServer.clientInfo[clientIP].destDir).encode("utf-8"))
+                        self.wfile.write(self.sysServer.makeWelcomeMessage(clientIP).encode("utf-8"))
                     except IOError as ioe:
                         self.send_error(404, "Incorrect path: {}".format(self.path))
                 else:
