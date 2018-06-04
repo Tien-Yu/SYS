@@ -124,7 +124,7 @@ def makeHandlerFromArguments(myServer):
                 result = "Default error"
                 code = 404
                 if value_pattern_type == "error":
-                    result = "No patterns selected"
+                    result = self.sysServer.makeWelcomeMessage(clientIP, noPatternError=True)
                     code = 404
                 else:
                     value_cu_num = "1" if value_cu_num == "single" else "2"
@@ -256,10 +256,12 @@ class SYSServer():
             return True
         return False
 
-    def makeWelcomeMessage(self, ip):
+    def makeWelcomeMessage(self, ip, noPatternError=False):
         jsonMsg = ""
         dictMsg = dict()
-        if ip in self.clientInfo:
+        if noPatternError is True:
+            dictMsg["first"] = "No pattern selected"
+        elif ip in self.clientInfo:
             info = self.clientInfo[ip]
             if info.jobCount <= 0:
                 dictMsg["first"] = "Welcome back! You have no jobs in progress. Previous pattern locations: "
