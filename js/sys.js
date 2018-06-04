@@ -6,11 +6,11 @@ $( document ).ready(function() {
         data: $(this).serialize(),
         success: function (data) {
             var myObj = JSON.parse(data);
-            var first = myObj.first;
-            var id = "<b>" + myObj.idVal + "</b>";
-            var second = myObj.second + "</br></br>";
-            var third = myObj.third;
-            var path = "</br><b>" + myObj.path + "</b>";
+            var first = myObj.first ? myObj.first : "";
+            var id = myObj.idVal ? ("<b>" + myObj.idVal + "</b>") : "";
+            var second = myObj.second ? (myObj.second + "</br></br>") : "";
+            var third = myObj.third ? myObj.third : "";
+            var path = myObj.path ? ("</br><b>" + myObj.path + "</b>") : "";
             $("#message").html(first + id + second + third + path);
 
         },
@@ -41,9 +41,9 @@ $('#container').on('submit', function(event) {
 
             // animation
             $("#message-container").css({"animation": "pulse 3s infinite"});
-            setTimeout(function(){ $("#message-container").css({"box-shadow": "none", "animation": "none"}); }, 3000);
+            setTimeout(function(){ $("#message-container").css({"animation": "none"}); }, 3000);
             $("#submitBtn").css({"animation": "pulseBtn 1.5s infinite"});
-            setTimeout(function(){ $("#submitBtn").css({"box-shadow": "none", "animation": "none"}); }, 1500);
+            setTimeout(function(){ $("#submitBtn").css({"animation": "none"}); }, 1500);
         },
         error: function (jXHR, textStatus, errorThrown) {
             alert(errorThrown);
