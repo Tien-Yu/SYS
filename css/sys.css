@@ -92,14 +92,19 @@ select {
     overflow: scroll;
 }
 
-#nonConformanceBtn, #conformanceBtn {
+#nonConformanceBtn, #conformanceBtn, #resetBtn {
     font-size: 14px;
     background-color: transparent;
     border-radius: 5px;
     border: 1px solid #f3991e;
-    width: 70px;
+    padding: 2px 15px;
     margin-bottom: 10px;
     color: #f3991e;
+}
+
+#resetBtn {
+    padding: 5px 20px;
+    font-size: 16px;
 }
 
 #submitBtn {
@@ -129,7 +134,13 @@ select {
     border: 1px solid white;
 }
 
-#nonConformanceBtn:focus, #conformanceBtn:focus {
+#resetBtn:hover {
+    cursor: pointer;
+    color: #f1c40f;
+    border: 1px solid #f1c40f;
+}
+
+#nonConformanceBtn:focus, #conformanceBtn:focus, #resetBtn:focus {
     outline:0;
 }
 
