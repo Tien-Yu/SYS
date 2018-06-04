@@ -32,7 +32,14 @@ $('#container').on('submit', function(event) {
         type: "POST",
         data: $(this).serialize(),
         success: function (data) {
-            $("#message").html(data); //TODO: process json
+            data='{"first": "Currently you have 1 job (ID: ","idVal": "4","second": ") still running.","third": "You will get your patterns in ","path": "nobackup/d_02168_t2/tingchu02168/20180601_non_conformance_single_4"}'
+            var myObj = JSON.parse(data);
+            var first = myObj.first;
+            var id = "<b>" + myObj.idVal + "</b>";
+            var second = myObj.second + "</br></br>";
+            var third = myObj.third;
+            var path = "</br><b>" + myObj.path + "</b>";
+            $("#message").html(first + id + second + third + path);
         },
         error: function (jXHR, textStatus, errorThrown) {
             alert(errorThrown);
