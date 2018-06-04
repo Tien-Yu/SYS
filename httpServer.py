@@ -262,10 +262,10 @@ class SYSServer():
             if info.jobCount <= 0:
                 msg = "Welcome back! You have no jobs in progress. Previous pattern locations: {}".format(info.destDir)
             else:
-                msg = "Currently there is {} job (ID: {}) from you still running.".format(info.jobCount, info.serialID)
+                msg = "Currently you have {} job (ID: {}) still running.".format(info.jobCount, info.serialID)
                 msg += "You will get your patterns in {}".format(info.destDir)
         else:
-            msg = "Welcome! There are no jobs of yours currently running."
+            msg = "Welcome! You have no jobs currently running."
         return msg
 
     def makeCommand(self, simType, cuNum, mem, probe, patternType, patternList, regressPath):
