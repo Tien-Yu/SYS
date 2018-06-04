@@ -1,3 +1,29 @@
+$( document ).ready(function() {
+    // get message on document ready
+    $.ajax({
+        url : "/js/message" || window.location.pathname,
+        type: "GET",
+        data: $(this).serialize(),
+        success: function (data) {
+            //data='{"first": "Currently you have 1 job (ID: ","idVal": "4","second": ") still running.","third": "You will get your patterns in ","path": "nobackup/d_02168_t2/tingchu02168/20180601_non_conformance_single_4"}'
+            var myObj = JSON.parse(data);
+            var first = myObj.first;
+            var id = "<b>" + myObj.idVal + "</b>";
+            var second = myObj.second + "</br></br>";
+            var third = myObj.third;
+            var path = "</br><b>" + myObj.path + "</b>";
+            $("#message").html(first + id + second + third + path);
+
+        },
+        error: function (jXHR, textStatus, errorThrown) {
+            alert(errorThrown);
+        }
+    });
+    // List options in dialog
+    listOptions("data/group_non_conformance.json", "non_options", "nonConformance", "selectAllNonId");
+    listOptions("data/group_conformance.json", "options", "conformance", "selectAllId");
+});
+
 // Prevent being directed to new page
 $('#container').on('submit', function(event) {
     event.preventDefault();
@@ -13,27 +39,6 @@ $('#container').on('submit', function(event) {
         }
     });
 });
-
-// get message on document ready
-$( document ).ready(function() {
-    $.ajax({
-        url : "/js/message" || window.location.pathname,
-        type: "GET",
-        data: $(this).serialize(),
-        success: function (data) {
-            $("#message").html(data); //TODO: process json
-        },
-        error: function (jXHR, textStatus, errorThrown) {
-            alert(errorThrown);
-        }
-    });
-});
-
-
-
-// List options in dialog
-listOptions("data/group_non_conformance.json", "non_options", "nonConformance", "selectAllNonId");
-listOptions("data/group_conformance.json", "options", "conformance", "selectAllId");
 
 // "Select all" buttons in two dialogs
 $("#selectAllNonId").change(function() {
