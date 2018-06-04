@@ -8,7 +8,7 @@ body {
     font-size: 16px;
     text-align: left;
     width: 570px;
-    margin: 15px auto 10px;
+    margin: 15px auto 15px;
     word-break: break-all;
     padding: 30px;
     border-radius:10px;
@@ -173,6 +173,70 @@ footer {
     color: white;
     font-size: 13px;
 }
+
+/* animation - message */
+@-webkit-keyframes pulse {
+  0% {
+    -webkit-box-shadow: 0 0 0 0 rgba(255,227,188,0.9);
+    -webkit-background-color: rgba(255,227,188,0.7);
+  }
+  50% {
+      -webkit-box-shadow: 0 0 0 12px rgba(255,227,188,0.6);
+      -webkit-background-color: rgba(255,227,188,1);
+  }
+  100% {
+      -webkit-box-shadow: 0 0 0 0 rgba(255,227,188,0);
+      -webkit-background-color: rgba(255,227,188,0.7);
+  }
+}
+@keyframes pulse {
+  0% {
+    -moz-box-shadow: 0 0 0 0 rgba(255,227,188,0.9);
+    box-shadow: 0 0 0 0 rgba(255,227,188,0.9);
+    -moz-background-color: rgba(255,227,188,0.7);
+    background-color: rgba(255,227,188,0.7);
+  }
+  50% {
+      -moz-box-shadow: 0 0 0 12px rgba(255,227,188,0.6);
+      box-shadow: 0 0 0 12px rgba(255,227,188,0.6);
+      -moz-background-color: rgba(255,227,188,1);
+      background-color: rgba(255,227,188,1);
+  }
+  100% {
+      -moz-box-shadow: 0 0 0 0 rgba(255,227,188,0);
+      box-shadow: 0 0 0 0 rgba(255,227,188,0);
+      -moz-background-color: rgba(255,227,188,0.7);
+      background-color: rgba(255,227,188,0.7);
+  }
+}
+
+/* animation - submit button */
+@-webkit-keyframes pulseBtn {
+  0% {
+    -webkit-box-shadow: 0 0 0 0 rgba(204,169,44, 0.4);
+  }
+  70% {
+      -webkit-box-shadow: 0 0 0 10px rgba(204,169,44, 0);
+  }
+  100% {
+      -webkit-box-shadow: 0 0 0 0 rgba(204,169,44, 0);
+  }
+}
+@keyframes pulseBtn {
+  0% {
+    -moz-box-shadow: 0 0 0 0 rgba(204,169,44, 0.4);
+    box-shadow: 0 0 0 0 rgba(204,169,44, 0.4);
+  }
+  70% {
+      -moz-box-shadow: 0 0 0 10px rgba(204,169,44, 0);
+      box-shadow: 0 0 0 10px rgba(204,169,44, 0);
+  }
+  100% {
+      -moz-box-shadow: 0 0 0 0 rgba(204,169,44, 0);
+      box-shadow: 0 0 0 0 rgba(204,169,44, 0);
+  }
+}
+
 /* For jquery UI dialog */
 .ui-dialog {
     border-radius: 10px;
