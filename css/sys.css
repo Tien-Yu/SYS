@@ -3,10 +3,16 @@ body {
     background-size: cover;
     background-position: center;
 }
-#message {
+#message-container {
     color: #624b0a;
     font-size: 16px;
-    text-align: center;
+    text-align: left;
+    width: 570px;
+    margin: 15px auto 10px;
+    word-break: break-all;
+    padding: 30px;
+    border-radius:10px;
+    background-color: rgba(255,227,188,0.7);
 }
 #container {
     text-align: left;
@@ -18,7 +24,7 @@ body {
 }
 
 @media only screen and (max-width: 1000px) {
-    #container {
+    #container, #message-container {
         width: 430px;
         padding-left: 35px;
         padding-right: 35px;
