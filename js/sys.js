@@ -55,12 +55,7 @@ $('#container').on('submit', function(event) {
 
 //Reset
 $("#resetBtn").click(function (e) {
-    $("select[name='sim']")[0].selectedIndex = 0;
-    $("select[name='cu_num']")[0].selectedIndex = 0;
-    $("select[name='mem']")[0].selectedIndex = 0;
-    $("select[name='probe']")[0].selectedIndex = 0;
-    $("input[name='nonConformance']").prop("checked", false);
-    $("input[name='conformance']").prop("checked", false);
+    document.getElementById("container").reset();
     $("#showSelectedNon").val("");
     $("#showSelected").val("");
     // feedback animation
