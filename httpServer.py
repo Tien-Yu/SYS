@@ -136,7 +136,7 @@ def makeHandlerFromArguments(myServer):
                         self.send_response(code)
                         self.send_header('Content-type','text/html')
                         self.end_headers()
-                        self.wfile.write(self.sysServer.makeWelcomeMessage(clientIP).encode("utf-8"))
+                        self.wfile.write(self.sysServer.makeWelcomeMessage(clientIP, isPost=True).encode("utf-8"))
                     except IOError as ioe:
                         self.send_error(404, "Incorrect path: {}".format(self.path))
                 else:
@@ -201,13 +201,14 @@ class SYSServer():
         self.clientInfo[clientIP].destDir = util.makeDestinationFullPath(ftp, simType, cuNum, patternType, self.serialNumber)
         self.clientInfo[clientIP].process = child
         self.clientInfo[clientIP].mosesqJobID = mosesqID
+        self.clientInfo[clientIP].patternCount = len(patternList)
         self.serialNumber += 1
         ftp.quit()
         self.syslog("Destination path: {}".format(self.clientInfo[clientIP].destDir))
         return True
 
     def pollChildren(self):
-        for ip in self.clientInfo.keys():
+        for ip in list(self.clientInfo):
             info = self.clientInfo[ip]
             if info.jobCount == 0:
                 continue
@@ -256,7 +257,7 @@ class SYSServer():
             return True
         return False
 
-    def makeWelcomeMessage(self, ip, noPatternError=False):
+    def makeWelcomeMessage(self, ip, noPatternError=False, isPost=False):
         jsonMsg = ""
         dictMsg = dict()
         if noPatternError is True:
@@ -267,11 +268,28 @@ class SYSServer():
                 dictMsg["first"] = "Welcome back! You have no jobs in progress. Previous pattern locations: "
                 dictMsg["path"] = info.destDir
             else:
-                dictMsg["first"] = "Currently you have {} job (ID: ".format(info.jobCount)
-                dictMsg["idVal"] = "{}".format(info.serialID)
-                dictMsg["second"] = ") still running.".format(info.jobCount, info.serialID)
-                dictMsg["third"] = "You'll get your patterns in "
-                dictMsg["path"] = info.destDir
+                curdir = os.getcwd()
+                self.cdToRegressionPath(info.regressPath)
+                processedPatternCount = 0
+                try:
+                    with open("out/pattern_count.txt", "r") as countFile:
+                        processedPatternCount = countFile.readline()
+                except:
+                    pass
+
+                os.chdir(curdir)
+                if isPost is True:
+                    dictMsg["first"] = "SYS received your job, ID: "
+                    dictMsg["idVal"] = "{}".format(info.serialID)
+                    dictMsg["second"] = ". Patterns processed/total : {} / {}".format(processedPatternCount, info.patternCount)
+                    dictMsg["third"] = "You'll get your patterns in "
+                    dictMsg["path"] = info.destDir
+                else:
+                    dictMsg["first"] = "Currently you have {} job (ID: ".format(info.jobCount)
+                    dictMsg["idVal"] = "{}".format(info.serialID)
+                    dictMsg["second"] = ") still running. Patterns processed/total : {} / {}".format(processedPatternCount, info.patternCount)
+                    dictMsg["third"] = "You'll get your patterns in "
+                    dictMsg["path"] = info.destDir
         else:
             dictMsg["first"] = "Welcome! You have no jobs currently running."
         jsonMsg = json.dumps(dictMsg)
@@ -284,12 +302,7 @@ class SYSServer():
             inputFilename = "group_non_conformance.txt"
         else:
             curdir = os.getcwd()
-            if regressPath == 0:
-                os.chdir("../HAVE-Regression/")
-            elif regressPath == 1:
-                os.chdir("../regression2/HAVE-Regression")
-            else:
-                os.chdir("../regression3/HAVE-Regression")
+            self.cdToRegressionPath(regressPath)
 
             newlineList = [line + "\n" for line in patternList]
             with open(inputFilename, "w") as infile:
@@ -301,6 +314,14 @@ class SYSServer():
         cmd = "mosesq time python3 genPatternFromfile.py -file {} -sim {} -cu {} -mem {} -pattern_type {} {} -delete -upload -have_path 2 -regression_path {} -serialID {}".format(inputFilename, simType, cuNum, mem, patternType, probeCfg, regressPath, self.serialNumber)
 
         return cmd
+
+    def cdToRegressionPath(self, regressPath):
+        if regressPath == 0:
+            os.chdir("../HAVE-Regression/")
+        elif regressPath == 1:
+            os.chdir("../regression2/HAVE-Regression")
+        else:
+            os.chdir("../regression3/HAVE-Regression")
 
     def syslog(self, message, printToScreen=True):
         self.logfile.write(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()) + " ")
@@ -348,6 +369,7 @@ class ClientInfo:
         self.regressPath = -1
         self.process = None
         self.mosesqJobID = ""
+        self.patternCount = 0
 
 def main():
     if sys.argv[1:]:
