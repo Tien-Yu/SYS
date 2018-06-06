@@ -259,14 +259,18 @@ class SYSServer():
 
     def makeWelcomeMessage(self, ip, noPatternError=False, isPost=False):
         jsonMsg = ""
-        dictMsg = dict()
+        dictMsg = {}
+        dictMsg[0] = {}
+        dictMsg[1] = {}
+        dictMsg[2] = {}
+        dictMsg[3] = {}
         if noPatternError is True:
-            dictMsg["first"] = "No pattern selected"
+            dictMsg[0][0] = "No pattern selected"
         elif ip in self.clientInfo:
             info = self.clientInfo[ip]
             if info.jobCount <= 0:
-                dictMsg["first"] = "Welcome back! You have no jobs in progress. Previous pattern locations: "
-                dictMsg["path"] = info.destDir
+                dictMsg[0][0] = "Welcome back! You have no jobs in progress. Previous pattern locations: "
+                dictMsg[1][0] = "<strong>" + info.destDir + "</strong>"
             else:
                 curdir = os.getcwd()
                 self.cdToRegressionPath(info.regressPath)
@@ -279,19 +283,21 @@ class SYSServer():
 
                 os.chdir(curdir)
                 if isPost is True:
-                    dictMsg["first"] = "SYS received your job, ID: "
-                    dictMsg["idVal"] = "{}".format(info.serialID)
-                    dictMsg["second"] = ". Patterns processed/total : {} / {}".format(processedPatternCount, info.patternCount)
-                    dictMsg["third"] = "You'll get your patterns in "
-                    dictMsg["path"] = info.destDir
+                    dictMsg[0][0] = "SYS received your job, ID: "
+                    dictMsg[0][1] = "<strong>" + "{}".format(info.serialID) + "</strong>"
+                    dictMsg[0][2] = "."
+                    dictMsg[1][0] = "Patterns processed/total : <strong>{} / {}</strong>".format(processedPatternCount, info.patternCount)
+                    dictMsg[2][0] = "You'll get your patterns in "
+                    dictMsg[2][1] = "<strong>" + info.destDir + "</strong>"
                 else:
-                    dictMsg["first"] = "Currently you have {} job (ID: ".format(info.jobCount)
-                    dictMsg["idVal"] = "{}".format(info.serialID)
-                    dictMsg["second"] = ") still running. Patterns processed/total : {} / {}".format(processedPatternCount, info.patternCount)
-                    dictMsg["third"] = "You'll get your patterns in "
-                    dictMsg["path"] = info.destDir
+                    dictMsg[0][0] = "Currently you have {} job (ID: ".format(info.jobCount)
+                    dictMsg[0][1] = "<strong>" + "{}".format(info.serialID) + "</strong>"
+                    dictMsg[0][2] = ") still running."
+                    dictMsg[1][0] = "Patterns processed/total : <strong>{} / {}</strong>".format(processedPatternCount, info.patternCount)
+                    dictMsg[2][0] = "You'll get your patterns in "
+                    dictMsg[3][0] = "<strong>" + info.destDir + "</strong>"
         else:
-            dictMsg["first"] = "Welcome! You have no jobs currently running."
+            dictMsg[0][0] = "Welcome! You have no jobs currently running."
         jsonMsg = json.dumps(dictMsg)
         print(jsonMsg)
         return jsonMsg

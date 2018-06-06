@@ -5,26 +5,36 @@ $( document ).ready(function() {
         type: "GET",
         data: $(this).serialize(),
         success: function (data) {
-            // data='{"first": "qqqCurrently you have 1 job (ID: ","idVal": "4","second": ") still running.","third": "You will get your patterns in ","path": "nobackup/d_02168_t2/tingchu02168/20180601_non_conformance_single_4"}';
+            // For testing without server messages
+            //data='{"0": {"0": "SYS received your job, ID: ", "1": "<strong>4", "2": "</strong>."}, "1": {"0": "Patterns processed/total : <strong>4 / 14</strong>"}, "2": {"0": "Youll get your patterns in "}, "3": {"0": "<strong>nobackup/d_02168_t2/tingchu02168/20180601_non_conformance_single_4</strong>"}}';
+            
+            // parse json to object
             var myObj = JSON.parse(data);
-            var first = myObj.first ? myObj.first : "";
-            var id = myObj.idVal ? ("<b>" + myObj.idVal + "</b>") : "";
-            var second = myObj.second ? (myObj.second + "</br></br>") : "";
-            var third = myObj.third ? myObj.third : "";
-            var path = myObj.path ? ("</br><b>" + myObj.path + "</b>") : "";
-            $("#message").html(first + id + second + third + path);
 
+            //parse object to array
+            var text = Object.keys(myObj).map(function (key) { return myObj[key]; });
+            var str = "";
+            for(var i = 0; i < text.length; i++) {
+                if(Object.keys(text[i]).length !== 0) {
+                    text[i] = Object.keys(text[i]).map(function (key) { return text[i][key]; });
+                    str += text[i].join("") + "</br>";
+                }
+            }
+
+            // insert into message box
+            $("#message").html(str);
         },
         error: function (jXHR, textStatus, errorThrown) {
-            alert(errorThrown);
+            console.log(errorThrown);
         }
     });
+
     // List options in dialog
     listOptions("data/group_non_conformance.json", "non_options", "nonConformance", "selectAllNonId");
     listOptions("data/group_conformance.json", "options", "conformance", "selectAllId");
 });
 
-// Prevent being directed to new page
+// Prevent being directed to new page, and change message
 $('#container').on('submit', function(event) {
     event.preventDefault();
     $.ajax({
@@ -32,14 +42,21 @@ $('#container').on('submit', function(event) {
         type: "POST",
         data: $(this).serialize(),
         success: function (data) {
-            // data='{"first": "qqqCurrently you have 1 job (ID: ","idVal": "4","second": ") still running.","third": "You will get your patterns in ","path": "nobackup/d_02168_t2/tingchu02168/20180601_non_conformance_single_4"}';
+            // parse json to object
             var myObj = JSON.parse(data);
-            var first = myObj.first ? myObj.first : "";
-            var id = myObj.idVal ? ("<b>" + myObj.idVal + "</b>") : "";
-            var second = myObj.second ? (myObj.second + "</br></br>") : "";
-            var third = myObj.third ? myObj.third : "";
-            var path = myObj.path ? ("</br><b>" + myObj.path + "</b>") : "";
-            $("#message").html(first + id + second + third + path);
+
+            //parse object to array
+            var text = Object.keys(myObj).map(function (key) { return myObj[key]; });
+            var str = "";
+            for(var i = 0; i < text.length; i++) {
+                if(Object.keys(text[i]).length !== 0) {
+                    text[i] = Object.keys(text[i]).map(function (key) { return text[i][key]; });
+                    str += text[i].join("")+"</br>";
+                }
+            }
+
+            // insert into message box
+            $("#message").html(str);
 
             // animation
             $("#message-container").css({"animation": "pulse 3s infinite"});
@@ -48,7 +65,7 @@ $('#container').on('submit', function(event) {
             setTimeout(function(){ $("#submitBtn").css({"animation": "none", "box-shadow": "none"}); }, 1500);
         },
         error: function (jXHR, textStatus, errorThrown) {
-            alert(errorThrown);
+            console.log(errorThrown);
         }
     });
 });
