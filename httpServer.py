@@ -88,12 +88,15 @@ def makeHandlerFromArguments(myServer):
                 headers=self.headers,
                 environ={'REQUEST_METHOD': 'POST'}
             )
+            ####### Arguments from web browser #######
             value_sim = form.getvalue("sim")
             value_cu_num = form.getvalue("cu_num")
             value_mem = form.getvalue("mem")
             value_probe = form.getvalue("probe")
             value_non_conformance = form.getvalue("showSelectedNon")
             value_conformance = form.getvalue("showSelected")
+            ##########################################
+
             # value_pattern_list = value_non_conformance.split(", ")
             value_pattern_list = []
             value_pattern_type = ""
@@ -121,7 +124,7 @@ def makeHandlerFromArguments(myServer):
 
             if self.path == "index.html":
                 clientIP = self.client_address[0]
-                result = "Default error"
+                result = {} # result below should be a 2D json, for javascript
                 code = 404
                 if value_pattern_type == "error":
                     result = self.sysServer.makeWelcomeMessage(clientIP, noPatternError=True)
@@ -182,10 +185,12 @@ class SYSServer():
         return True
         regressPath = self.dispatchRegressionWorkspace()
         if regressPath == -1:
-            return "All three workspaces are busy."
+            dictMsg = {0: {0: "All three workspaces are busy."}}
+            return json.dumps(dictMsg)
 
         if self.checkIP(clientIP, regressPath) is False:
-            return "You already have a job (ID: {}) running".format(self.clientInfo[clientIP].serialID)
+            dictMsg = {0: {0: "You already have a job (ID: {}) running".format(self.clientInfo[clientIP].serialID)}}
+            return json.dumps(dictMsg)
 
         cmd = self.makeCommand(simType, cuNum, mem, probe, patternType, patternList, regressPath)
         self.syslog("[Job {}][{}] Command: {}".format(self.serialNumber, clientIP, cmd))
@@ -264,6 +269,8 @@ class SYSServer():
         dictMsg[1] = {}
         dictMsg[2] = {}
         dictMsg[3] = {}
+        dictMsg[4] = {}
+        currentHAVEcommitHash = self.getLatestHAVEcommit()
         if noPatternError is True:
             dictMsg[0][0] = "No pattern selected"
         elif ip in self.clientInfo:
@@ -271,6 +278,7 @@ class SYSServer():
             if info.jobCount <= 0:
                 dictMsg[0][0] = "Welcome back! You have no jobs in progress. Previous pattern locations: "
                 dictMsg[1][0] = "<strong>" + info.destDir + "</strong>"
+                dictMsg[2][0] = "Latest HAVE commit: " + currentHAVEcommitHash
             else:
                 curdir = os.getcwd()
                 self.cdToRegressionPath(info.regressPath)
@@ -289,6 +297,7 @@ class SYSServer():
                     dictMsg[1][0] = "Patterns processed/total : <strong>{} / {}</strong>".format(processedPatternCount, info.patternCount)
                     dictMsg[2][0] = "You'll get your patterns in "
                     dictMsg[2][1] = "<strong>" + info.destDir + "</strong>"
+                    dictMsg[3][0] = "Latest HAVE commit: " + currentHAVEcommitHash
                 else:
                     dictMsg[0][0] = "Currently you have {} job (ID: ".format(info.jobCount)
                     dictMsg[0][1] = "<strong>" + "{}".format(info.serialID) + "</strong>"
@@ -296,11 +305,27 @@ class SYSServer():
                     dictMsg[1][0] = "Patterns processed/total : <strong>{} / {}</strong>".format(processedPatternCount, info.patternCount)
                     dictMsg[2][0] = "You'll get your patterns in "
                     dictMsg[3][0] = "<strong>" + info.destDir + "</strong>"
+                    dictMsg[4][0] = "Latest HAVE commit: " + currentHAVEcommitHash
         else:
             dictMsg[0][0] = "Welcome! You have no jobs currently running."
+            dictMsg[1][0] = "Latest HAVE commit: " + currentHAVEcommitHash
         jsonMsg = json.dumps(dictMsg)
         print(jsonMsg)
+        print(type(dictMsg))
         return jsonMsg
+
+    def getLatestHAVEcommit(self):
+        curdir = os.getcwd()
+        os.chdir("/proj/mtk10109/mtk_git/have3/HAVE")
+        process = Popen("git rev-parse HEAD".split(), stdout=PIPE)
+        out, err = process.communicate()
+        commit = out.decode("utf-8").strip()
+        if commit == "805698b12b2033219b3c94da8c91c775c8cbfd7a":    # jenjung's force inorder patch
+            process = Popen("git rev-parse HEAD~1".split(), stdout=PIPE)
+            out, err = process.communicate()
+            commit = out.decode("utf-8").strip()
+        os.chdir(curdir)
+        return commit
 
     def makeCommand(self, simType, cuNum, mem, probe, patternType, patternList, regressPath):
         inputFilename = "templist" + str(self.serialNumber) + ".txt"
@@ -316,8 +341,11 @@ class SYSServer():
 
             os.chdir(curdir)
 
+        havePath = 2
+        if simType == "cu_sim":
+            havePath = 3
         probeCfg = "-probe" if probe is True else ""
-        cmd = "mosesq time python3 genPatternFromfile.py -file {} -sim {} -cu {} -mem {} -pattern_type {} {} -delete -upload -have_path 2 -regression_path {} -serialID {}".format(inputFilename, simType, cuNum, mem, patternType, probeCfg, regressPath, self.serialNumber)
+        cmd = "mosesq time python3 genPatternFromfile.py -file {} -sim {} -cu {} -mem {} -pattern_type {} {} -delete -upload -have_path {} -regression_path {} -serialID {}".format(inputFilename, simType, cuNum, mem, patternType, probeCfg, havePath, regressPath, self.serialNumber)
 
         return cmd
 
@@ -330,11 +358,11 @@ class SYSServer():
             os.chdir("../regression3/HAVE-Regression")
 
     def syslog(self, message, printToScreen=True):
-        self.logfile.write(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()) + " ")
+        self.logfile.write(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + " ")
         self.logfile.write(message + "\n")
         self.logfile.flush()
         if printToScreen is True:
-            print(time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
+            print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
             print(message)
 
     def dispatchRegressionWorkspace(self):
