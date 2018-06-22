@@ -87,12 +87,12 @@ select {
     font-size: 14px;
 }
 
-#nonConformanceDialog, #conformanceDialog {
+.dialog {
     display: none;
     overflow: scroll;
 }
 
-#nonConformanceBtn, #conformanceBtn, #resetBtn {
+.selectBtn, #resetBtn {
     font-size: 14px;
     background-color: transparent;
     border-radius: 5px;
@@ -118,56 +118,46 @@ select {
 }
 
 #submitBtn:hover {
-    cursor: pointer;
     color: white;
     background-color: #f1c40f;
     border: 1px solid #f1c40f;
 }
 
-#submitBtn:focus {
-    outline:0;
-}
-
-#nonConformanceBtn:hover, #conformanceBtn:hover {
-    cursor: pointer;
+.selectBtn:hover {
     background-color: #f3991e;
     color: white;
     border: 1px solid white;
 }
 
 #resetBtn:hover {
-    cursor: pointer;
     color: #f1c40f;
     border: 1px solid #f1c40f;
 }
 
-#nonConformanceBtn:focus, #conformanceBtn:focus, #resetBtn:focus {
+button:focus, textarea:focus {
     outline:0;
 }
 
-#showSelectedNon, #showSelected {
+button:hover {
+    cursor: pointer;
+}
+
+textarea {
     display: block;
     border: 0;
     background-color: transparent;
     width: 100%;
     font-size: 14px;
     height: 60px;
-}
-
-#selectAllNonId, #selectAllId {
-    margin-bottom: 20px;
-}
-
-textarea {
     overflow-y : auto; /* IE */
     resize : none; /* Firefox, Chrome */
 }
 
-textarea:focus {
-    outline : 0; /* Chrome */
+.selectAll {
+    margin-bottom: 20px;
 }
 
-#non_options1, #non_options2, #options1, #options2 {
+table.optionList {
     display: inline-block;
     vertical-align: top;
 }
