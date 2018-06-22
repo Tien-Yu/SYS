@@ -11,6 +11,7 @@ from http.server import BaseHTTPRequestHandler
 from http.server import HTTPServer
 from subprocess import Popen, PIPE
 from threading import Thread
+from configparser import ConfigParser
 
 def makeHandlerFromArguments(myServer):
     class RequestHandler(BaseHTTPRequestHandler):
@@ -182,7 +183,6 @@ class SYSServer():
         server.serve_forever()
 
     def createChild(self, simType, cuNum, mem, probe, patternType, patternList, clientIP):
-        return True
         regressPath = self.dispatchRegressionWorkspace()
         if regressPath == -1:
             dictMsg = {0: {0: "All three workspaces are busy."}}
@@ -222,22 +222,28 @@ class SYSServer():
                 code = info.process.poll()
                 if code is None: # still running
                     if self.checkForceStop(info):
-                        print(util.ColorUtil.WARNING + " The job of client {} is being force stopped".format(ip))
+                        print(util.ColorUtil.WARNING + " The job of client {} is being force stopped".format(ip).strip())
                         self.syslog("bkill " + info.mosesqJobID)
                         os.system("bkill " + info.mosesqJobID)
                         info.process.kill()
                         info.cleanUp()
                         print("Done")
                     else:
+                        maxline = 10
+                        linecount = 0
                         line = info.process.stdout.readline()
                         while line:
                             print(line.decode("utf-8"), end="")
                             line = info.process.stdout.readline()
+                            linecount += 1
+                            if linecount >= maxline:
+                                break
+
                 else:
                     info.cleanUp()
                     self.syslog("Done the job of client {}".format(ip))
             else:
-                print("--- process is None !!!")
+                print(" --- process is None!")
 
     def checkForceStop(self, info):
         if os.path.exists("stop{}.cfg".format(info.regressPath)):
@@ -270,7 +276,12 @@ class SYSServer():
         dictMsg[2] = {}
         dictMsg[3] = {}
         dictMsg[4] = {}
-        currentHAVEcommitHash = self.getLatestHAVEcommit()
+        dictMsg[5] = {}
+        dictMsg[6] = {}
+        currentHAVEcommitMsg = self.getLatestHAVEcommitMsg()
+        msg0 = currentHAVEcommitMsg.split("|")[0]
+        msg1 = currentHAVEcommitMsg.split("|")[1]
+        msg2 = currentHAVEcommitMsg.split("|")[2]
         if noPatternError is True:
             dictMsg[0][0] = "No pattern selected"
         elif ip in self.clientInfo:
@@ -278,7 +289,9 @@ class SYSServer():
             if info.jobCount <= 0:
                 dictMsg[0][0] = "Welcome back! You have no jobs in progress. Previous pattern locations: "
                 dictMsg[1][0] = "<strong>" + info.destDir + "</strong>"
-                dictMsg[2][0] = "Latest HAVE commit: " + currentHAVEcommitHash
+                dictMsg[2][0] = msg0
+                dictMsg[3][0] = msg1
+                dictMsg[4][0] = msg2
             else:
                 curdir = os.getcwd()
                 self.cdToRegressionPath(info.regressPath)
@@ -297,7 +310,9 @@ class SYSServer():
                     dictMsg[1][0] = "Patterns processed/total : <strong>{} / {}</strong>".format(processedPatternCount, info.patternCount)
                     dictMsg[2][0] = "You'll get your patterns in "
                     dictMsg[2][1] = "<strong>" + info.destDir + "</strong>"
-                    dictMsg[3][0] = "Latest HAVE commit: " + currentHAVEcommitHash
+                    dictMsg[3][0] = msg0
+                    dictMsg[4][0] = msg1
+                    dictMsg[5][0] = msg2
                 else:
                     dictMsg[0][0] = "Currently you have {} job (ID: ".format(info.jobCount)
                     dictMsg[0][1] = "<strong>" + "{}".format(info.serialID) + "</strong>"
@@ -305,27 +320,38 @@ class SYSServer():
                     dictMsg[1][0] = "Patterns processed/total : <strong>{} / {}</strong>".format(processedPatternCount, info.patternCount)
                     dictMsg[2][0] = "You'll get your patterns in "
                     dictMsg[3][0] = "<strong>" + info.destDir + "</strong>"
-                    dictMsg[4][0] = "Latest HAVE commit: " + currentHAVEcommitHash
+                    dictMsg[4][0] = msg0
+                    dictMsg[5][0] = msg1
+                    dictMsg[6][0] = msg2
         else:
             dictMsg[0][0] = "Welcome! You have no jobs currently running."
-            dictMsg[1][0] = "Latest HAVE commit: " + currentHAVEcommitHash
+            dictMsg[1][0] = msg0
+            dictMsg[2][0] = msg1
+            dictMsg[3][0] = msg2
         jsonMsg = json.dumps(dictMsg)
         print(jsonMsg)
         print(type(dictMsg))
         return jsonMsg
 
-    def getLatestHAVEcommit(self):
+    def getLatestHAVEcommitMsg(self):
         curdir = os.getcwd()
+        prefix = "Latest HAVE commit: "
         os.chdir("/proj/mtk10109/mtk_git/have3/HAVE")
         process = Popen("git rev-parse HEAD".split(), stdout=PIPE)
         out, err = process.communicate()
         commit = out.decode("utf-8").strip()
-        if commit == "805698b12b2033219b3c94da8c91c775c8cbfd7a":    # jenjung's force inorder patch
+        process2 = Popen("git log HEAD~1..HEAD --format=%cd".split(), stdout=PIPE)
+        out2, err2 = process2.communicate()
+        dateStr = out2.decode("utf-8").strip()
+        if commit == "7d2132ccf93a160feeca1686eb44add8b5da6e00":    # jenjung's force inorder patch
             process = Popen("git rev-parse HEAD~1".split(), stdout=PIPE)
             out, err = process.communicate()
             commit = out.decode("utf-8").strip()
+            process2 = Popen("git log HEAD~1..HEAD --format=%cd".split(), stdout=PIPE)
+            out2, err2 = process2.communicate()
+            dateStr = out2.decode("utf-8").strip()
         os.chdir(curdir)
-        return commit
+        return "{}|{}|{}".format(prefix, commit, dateStr)
 
     def makeCommand(self, simType, cuNum, mem, probe, patternType, patternList, regressPath):
         inputFilename = "templist" + str(self.serialNumber) + ".txt"
@@ -354,8 +380,10 @@ class SYSServer():
             os.chdir("../HAVE-Regression/")
         elif regressPath == 1:
             os.chdir("../regression2/HAVE-Regression")
-        else:
+        elif regressPath == 2:
             os.chdir("../regression3/HAVE-Regression")
+        else:
+            assert False
 
     def syslog(self, message, printToScreen=True):
         self.logfile.write(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + " ")
@@ -370,8 +398,15 @@ class SYSServer():
             return 0
         elif not os.listdir("../regression2/HAVE-Regression/out"): # workspace 1 is empty, available
             return 1
-        # elif not os.listdir("../regression3/HAVE-Regression/out"): # workspace 1 is empty, available
-        #     return 2
+        elif not os.listdir("../regression3/HAVE-Regression/out"): # workspace 2 is empty, available
+            config = ConfigParser()
+            config.read('sys.cfg')
+            # config.add_section('main')
+            # config.set('main', 'quick_job_slot', "1")
+            if config.getint("main", "quick_job_slot") >= 1:    # Allow the 3rd workspace for quick jobs
+                return 2
+            else:
+                return -1
         else:
             return -1
 
