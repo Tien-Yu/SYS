@@ -1,4 +1,6 @@
 $( document ).ready(function() {
+    $(".ui-wrapper").css('padding-bottom','').css('padding-right','').css('height','').css('width','');
+    $("#showSelectedNon").css('height','').css('width','100%');
     // get message on document ready
     $.ajax({
         url : "/js/message" || window.location.pathname,
@@ -6,7 +8,7 @@ $( document ).ready(function() {
         data: $(this).serialize(),
         success: function (data) {
             // For testing without server messages
-            //data='{"0": {"0": "SYS received your job, ID: ", "1": "<strong>4", "2": "</strong>."}, "1": {"0": "Patterns processed/total : <strong>4 / 14</strong>"}, "2": {"0": "Youll get your patterns in "}, "3": {"0": "<strong>nobackup/d_02168_t2/tingchu02168/20180601_non_conformance_single_4</strong>"}}';
+            data='{"0": {"0": "SYS received your job, ID: ", "1": "<strong>4", "2": "</strong>."}, "1": {"0": "Patterns processed/total : <strong>4 / 14</strong>"}, "2": {"0": "Youll get your patterns in "}, "3": {"0": "<strong>nobackup/d_02168_t2/tingchu02168/20180601_non_conformance_single_4</strong>"}}';
             
             // parse json to object
             var myObj = JSON.parse(data);
@@ -96,31 +98,73 @@ $("#selectAllId").change(function() {
    }
 });
 
-// Open dialog
-$("#nonConformanceBtn").click(function (e) {
-    initializeDialog("#nonConformanceDialog", "nonConformance", "#showSelectedNon");  
+// Show input format example popup
+$("#popupNonCon").on('click mouseover', function () {
+    var popup = document.getElementById("inputFormatNonCon");
+    popup.classList.toggle("show");
 });
-$("#conformanceBtn").click(function (e) {
-    initializeDialog("#conformanceDialog","conformance", "#showSelected");
+$("#popupCon").on('click mouseover', function () {
+    var popup = document.getElementById("inputFormatCon");
+    popup.classList.toggle("show");
 });
 
-function initializeDialog(dialogId, checkboxName, showAreaId) {
+// Check if user input something in textarea manually
+var inputManuallyNon = false;
+var inputManually = false;
+$("#showSelectedNon").on('input', function () {
+    inputManuallyNon = true
+});
+$("#showSelected").on('input', function () {
+    inputManually = true
+});
+
+//
+$("#showSelectedNon").resizable({
+    handles: 's',
+    resize: function() {
+        $("#nonConformanceSection").height($("#showSelectedNon").height()+150);
+    }
+});
+$("#showSelected").resizable({
+    handles: 's',
+    resize: function() {
+        $("#conformanceSection").height($("#showSelected").height()+150);
+    }
+});
+
+// Open dialog
+$("#nonConformanceBtn").click(function (e) {
+    initializeDialog("#nonConformanceDialog", "nonConformance", "#showSelectedNon", inputManuallyNon);  
+});
+$("#conformanceBtn").click(function (e) {
+    initializeDialog("#conformanceDialog","conformance", "#showSelected", inputManually);
+});
+
+function initializeDialog(dialogId, checkboxName, showAreaId, manualInput) {
     $( dialogId ).dialog({
         width: "auto",
         height: 700,
         fluid: true, //new option
         buttons: {
             "Ok": function() {
-                // show selected items in textarea
-                var str="";
-                var checked = document.querySelectorAll("input[name='"+checkboxName+"']:checked");
-                for (var i = 0; i < checked.length; i++) {
-                    str += (i == checked.length-1) ? checked[i].value : (checked[i].value + ", ");
+                var replace = true;
+                if (manualInput) {
+                    var answer = confirm("Do you want to replace the original ones?")
+                    if (!answer) {
+                        replace = false;
+                    }
                 }
-                $(showAreaId).val(str);
-
-                // close dialog
-                $(this).dialog("close");
+                if(replace) {                    
+                    // show selected items in textarea
+                    var str="";
+                    var checked = document.querySelectorAll("input[name='"+checkboxName+"']:checked");
+                    for (var i = 0; i < checked.length; i++) {
+                        str += (i == checked.length-1) ? checked[i].value : (checked[i].value + "\n");
+                    }
+                    $(showAreaId).val(str);
+                    // close dialog
+                    $(this).dialog("close");
+                }
             },
             "Cancel": function() {
                 $(this).dialog("close");

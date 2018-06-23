@@ -3,15 +3,16 @@
         <title>Serve Yorself (SYS)</title>
         <link rel="stylesheet" type="text/css" href="./js/jquery-ui-1.12.1/jquery-ui.css">
         <link rel="stylesheet" type="text/css" href="./css/sys.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
     <body>
-        <div id="title">Serve Yourself</div>
+        <h1 id="title">Serve Yourself</h1>
         <div id="message-container">
         <p id="message" name="message"></p>
         </div>
         <form id="container" action="/" method="post">
-            <div class="select">
-                <p>Simulation type</p>
+            <div class="section select">
+                <h3>Simulation type</h3>
                 <select name="sim">
                     <option value="cu_sim"> CU-sim </option>
                     <option value="global_sim"> Global-sim</option>
@@ -19,42 +20,56 @@
                     <option value="fpga"> FPGA </option>
                 </select>
             </div>
-            <div class="select">
-                <p>Number of CUs</p>
+            <div class="section select">
+                <h3>Number of CUs</h3>
                 <select name="cu_num">
                     <option value="single"> single </option>
                     <option value="multi"> multi</option>
                 </select>
             </div>
-            <div class="select">
-                <p>Memory type</p>
+            <div class="section select">
+                <h3>Memory type</h3>
                 <select name="mem">
                     <option value="gm"> Turn off global-to-fast-global </option>
                     <option value="fgm"> Turn on global-to-fast-global (force GSM) </option>
                 </select>
             </div>
-            <div class="select">
-                <p>Probe</p>
+            <div class="section select">
+                <h3>Probe</h3>
                 <select name="probe">
                     <option value="On"> On </option>
                     <option value="Off"> Off </option>
                 </select>
             </div>
-            <div class="check">
-                <p>Non-conformance</p>
-                <button type="button" id="nonConformanceBtn" class="selectBtn" value="select">Select</button>
+            <div class="section check" id="nonConformanceSection">
+                <h3>Non-conformance</h3>
+                <button type="button" id="nonConformanceBtn" class="selectBtn">Select from list</button>
+                <span id="instruction">
+                    Please use a new line to separate each parameter.
+                    <span id="popupNonCon" class="popup">
+                        [Example]
+                        <span class="popupText" id="inputFormatNonCon">multiply_short<br>multi_tracking<br>resize_short<br>enqueue_task<br>simplecl<br>...</span>
+                    </span>
+                </span>
                 <div id="nonConformanceDialog" class="dialog" title="Non-conformance">
                     <p>Please select options you need. Check "<b>Select all</b>" to check all the options. Press <b>ctrl+f</b> to find options you need.</p>
                     <label id="selectAllLabel"><input type="checkbox" id="selectAllNonId" class="selectAll" value=""><b>Select all</b></label>
                     <table id="non_options1" class="optionList"></table>
                     <table id="non_options2" class="optionList"></table>
                 </div>
-                <textarea id="showSelectedNon" name="showSelectedNon" readonly></textarea>
+                <textarea id="showSelectedNon" name="showSelectedNon" placeholder="Nothing selected or entered"></textarea>
                 
             </div>
-            <div class="last check">
-                <p>Conformance</p>
-                <button type="button" id="conformanceBtn" class="selectBtn" value="select">Select</button>
+            <div class="section last check" id="conformanceSection">
+                <h3>Conformance</h3>
+                <button type="button" id="conformanceBtn" class="selectBtn">Select from list</button>
+                <span id="instruction">
+                    Please use a new line to separate each parameter.
+                    <span id="popupCon" class="popup">
+                        [Example]
+                        <span class="popupText" id="inputFormatCon">buffer<br>int_int_q<br>get_buffer_info<br>native_kernel<br>bool_type<br>...</span>
+                    </span>
+                </span>
                 <div id="conformanceDialog" class="dialog" title="Conformance">
                     <p>Please select options you need. Check "<b>Select all</b>" to check all the options. Press <b>ctrl+f</b> to find options you need.</p>
                     <label id="selectAllLabel"><input type="checkbox" id="selectAllId" class="selectAll" value=""><b>Select all</b></label>
@@ -73,6 +88,7 @@
 
         <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
         <script type="text/javascript" src="./js/sys.js"></script>
     </body>
 </html>

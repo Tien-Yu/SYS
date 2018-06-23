@@ -2,6 +2,7 @@ body {
     background: url('../img/bg2.jpg');
     background-size: cover;
     background-position: center;
+    background-attachment: fixed;
 }
 #message-container {
     color: #624b0a;
@@ -31,17 +32,17 @@ body {
     }
 }
 
-#container div {
+#container div.section {
     border-bottom: 1px solid #AAAAAA;
     margin-bottom: 10px;
 }
 
 #container div.select {
-    height: 100px;
+    height: 110px;
 }
 
 #container div.check {
-    height: 160px;
+    height: 220px;
 }
 
 @media only screen and (max-height: 1150px) {
@@ -50,10 +51,7 @@ body {
         padding-bottom: 35px;
     }
     #container div.select {
-        height: 85px;
-    }
-    #container div.check {
-        height: 145px;
+        height:95px;
     }
 }
 
@@ -73,7 +71,7 @@ p {
     font-family: "HelveticaNeue","Helvetica","Arial";
 }
 
-div#title {
+h1#title {
     font-size: 32px;
     color: white;
     text-align: center;
@@ -85,6 +83,69 @@ select {
     height: 30px;
     width: 280px;
     font-size: 14px;
+}
+
+#instruction {
+    display: block;
+    padding-bottom: 5px;
+}
+
+/* Popup container */
+.popup {
+    color: #c19311;
+    font-weight: bold;
+    position: relative;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* The actual popup */
+#popupNonCon .popupText, #popupCon .popupText {
+    visibility: hidden;
+    width: 160px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px 0;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -80px;
+}
+
+/* Popup arrow */
+.popup .popupText::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+}
+
+/* Toggle this class - hide and show the popup */
+#popupNonCon .show, #popupCon .show {
+    visibility: visible;
+    -webkit-animation: fadeIn 0.3s;
+    animation: fadeIn 0.3s;
+}
+
+/* Add animation (fade in the popup) */
+@-webkit-keyframes fadeIn {
+    from {opacity: 0;} 
+    to {opacity: 1;}
+}
+
+@keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity:1 ;}
 }
 
 .dialog {
@@ -145,12 +206,12 @@ button:hover {
 textarea {
     display: block;
     border: 0;
-    background-color: transparent;
-    width: 100%;
+    background-color: rgba(248,248,248);
+    width: 100% !important;
     font-size: 14px;
-    height: 60px;
-    overflow-y : auto; /* IE */
-    resize : none; /* Firefox, Chrome */
+    height: 80px;
+    min-height: 80px;
+    border-bottom: 4px double #c19311;
 }
 
 .selectAll {
@@ -237,6 +298,15 @@ footer {
       -moz-box-shadow: 0 0 0 0 rgba(204,169,44, 0);
       box-shadow: 0 0 0 0 rgba(204,169,44, 0);
   }
+}
+
+/* For jquery UI resizable */
+.ui-resizable-s {
+    height: 20px !important;
+}
+
+.ui-wrapper {
+    min-height: 88px;
 }
 
 /* For jquery UI dialog */
