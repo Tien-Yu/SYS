@@ -102,16 +102,18 @@ def makeHandlerFromArguments(myServer):
             value_pattern_list = []
             value_pattern_type = ""
             if value_non_conformance is not None and value_conformance is not None:
-                value_pattern_list = value_non_conformance.split(", ") + value_conformance.split(", ")
+                value_pattern_list = value_non_conformance.split("\r\n") + value_conformance.split("\r\n")
                 value_pattern_type = "mixed"
             elif value_non_conformance is not None and value_conformance is None:
-                value_pattern_list = value_non_conformance.split(", ")
+                value_pattern_list = value_non_conformance.split("\r\n")
                 value_pattern_type = "non_conformance"
             elif value_non_conformance is None and value_conformance is not None:
-                value_pattern_list = value_conformance.split(", ")
+                value_pattern_list = value_conformance.split("\r\n")
                 value_pattern_type = "conformance"
             else:
                 value_pattern_type = "error"
+            value_pattern_list = [x.strip() for x in value_pattern_list]
+            value_pattern_list = list(filter(None, value_pattern_list))
             probeCfg = True if value_probe == "On" else False
 
             print(util.ColorUtil.INFO + "clientIP       : {}".format(self.client_address))
@@ -119,6 +121,7 @@ def makeHandlerFromArguments(myServer):
             print(util.ColorUtil.INFO + "cu_num         : {}".format(value_cu_num))
             print(util.ColorUtil.INFO + "mem            : {}".format(value_mem))
             print(util.ColorUtil.INFO + "probe          : {}".format(value_probe))
+            print(util.ColorUtil.INFO + "non          : {}".format(value_pattern_list))
             #print(util.ColorUtil.INFO + "Non-Conformance: {}".format(value_non_conformance))
             #print(util.ColorUtil.INFO + "Conformance    : {}".format(value_conformance))
             # print(util.ColorUtil.INFO + "pattern list   : {}".format(value_pattern_list))
