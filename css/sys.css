@@ -321,6 +321,7 @@ footer {
 .ui-resizable-s {
     height: 12px !important;
     background-color: rgba(255,227,188,0.7);
+    z-index: 0 !important;
 }
 
 .ui-wrapper {
