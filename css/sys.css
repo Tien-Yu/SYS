@@ -13,7 +13,7 @@ body {
     word-break: break-all;
     padding: 20px 30px;
     border-radius:40px;
-    background-color: rgba(255,227,188,1);
+    background-color: rgba(255,227,188,0.7);
     position: fixed;
     bottom: 500px;
     left: 170px;
@@ -229,7 +229,6 @@ textarea {
     font-size: 14px;
     height: 80px;
     min-height: 80px;
-    border-bottom: 4px double #c19311;
 }
 
 .selectAll {
@@ -320,7 +319,8 @@ footer {
 
 /* For jquery UI resizable */
 .ui-resizable-s {
-    height: 20px !important;
+    height: 12px !important;
+    background-color: rgba(255,227,188,0.7);
 }
 
 .ui-wrapper {
