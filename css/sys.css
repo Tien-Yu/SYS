@@ -5,23 +5,18 @@ body {
     background-attachment: fixed;
 }
 
-#main {
-    margin: 15px auto 15px;
-    text-align: center;
-}
-
 #message-container {
     color: #624b0a;
     font-size: 16px;
     text-align: left;
     width: 320px;
     word-break: break-all;
-    padding: 30px;
+    padding: 20px 30px;
     border-radius:40px;
     background-color: rgba(255,227,188,1);
     position: fixed;
     bottom: 500px;
-    left: 200px;
+    left: 170px;
     border: 2px solid #624b0a;
 }
 
@@ -30,7 +25,11 @@ img#messageSpeaker {
     width: 420px;
     position: fixed;
     bottom: 80px;
-    left: 100px;
+    left: 70px;
+}
+
+li {
+    line-height: 1.5;
 }
 
 #container {
@@ -41,11 +40,11 @@ img#messageSpeaker {
     padding: 50px;
     background-color: rgba(255,255,255,0.9);
     display: inline-block;
-    margin-left: 450px;
+    margin-left: 620px;
 }
 
 @media only screen and (max-width: 1000px) {
-    #container, #message-container {
+    #container {
         width: 430px;
         padding-left: 35px;
         padding-right: 35px;
