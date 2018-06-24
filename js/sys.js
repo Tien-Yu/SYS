@@ -45,7 +45,6 @@ $('#container').on('submit', function(event) {
         data: $(this).serialize(),
         success: function (data) {
             // parse json to object
-            console.log(typeof(data));
             var myObj = JSON.parse(data);
 
             //parse object to array
