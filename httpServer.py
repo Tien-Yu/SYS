@@ -41,12 +41,12 @@ def makeHandlerFromArguments(myServer):
                 self.send_header('Content-type','text/plain')
                 self.end_headers()
                 self.wfile.write(self.sysServer.makeWelcomeMessage(clientIP).encode("utf-8"))
-            elif self.path == "/img/bg2.jpg":
+            elif self.path.startswith("/img/"):
                 self.send_response(200)
-                self.send_header('Content-type','image/jpg')
+                self.send_header('Content-type','')
                 self.end_headers()
-                with open("img/bg2.jpg", "rb") as bg:
-                    self.wfile.write(bg.read())
+                with open(self.path.replace("/", "", 1), "rb") as itemfile:
+                    self.wfile.write(itemfile.read())
             elif self.path == "/css/sys.css":
                 self.send_response(200)
                 self.send_header('Content-type','text/css')
