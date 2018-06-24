@@ -4,17 +4,35 @@ body {
     background-position: center;
     background-attachment: fixed;
 }
+
+#main {
+    margin: 15px auto 15px;
+    text-align: center;
+}
+
 #message-container {
     color: #624b0a;
     font-size: 16px;
     text-align: left;
-    width: 570px;
-    margin: 15px auto 15px;
+    width: 320px;
     word-break: break-all;
     padding: 30px;
-    border-radius:10px;
-    background-color: rgba(255,227,188,0.7);
+    border-radius:40px;
+    background-color: rgba(255,227,188,1);
+    position: fixed;
+    bottom: 500px;
+    left: 200px;
+    border: 2px solid #624b0a;
 }
+
+img#messageSpeaker {
+    display: inline-block;
+    width: 420px;
+    position: fixed;
+    bottom: 80px;
+    left: 100px;
+}
+
 #container {
     text-align: left;
     width: 530px;
@@ -22,6 +40,8 @@ body {
     border-radius:10px;
     padding: 50px;
     background-color: rgba(255,255,255,0.9);
+    display: inline-block;
+    margin-left: 450px;
 }
 
 @media only screen and (max-width: 1000px) {
@@ -108,9 +128,8 @@ select {
     width: 160px;
     background-color: #555;
     color: #fff;
-    text-align: center;
     border-radius: 6px;
-    padding: 8px 0;
+    padding: 8px 0 8px 15px;
     position: absolute;
     z-index: 1;
     bottom: 125%;
