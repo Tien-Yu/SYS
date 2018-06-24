@@ -19,7 +19,7 @@ $( document ).ready(function() {
             for(var i = 0; i < text.length; i++) {
                 if(Object.keys(text[i]).length !== 0) {
                     text[i] = Object.keys(text[i]).map(function (key) { return text[i][key]; });
-                    str += text[i].join("") + "</br>";
+                    str += "<li>"+text[i].join("") + "</li>";
                 }
             }
 
@@ -45,6 +45,7 @@ $('#container').on('submit', function(event) {
         data: $(this).serialize(),
         success: function (data) {
             // parse json to object
+            console.log(typeof(data));
             var myObj = JSON.parse(data);
 
             //parse object to array
@@ -53,7 +54,7 @@ $('#container').on('submit', function(event) {
             for(var i = 0; i < text.length; i++) {
                 if(Object.keys(text[i]).length !== 0) {
                     text[i] = Object.keys(text[i]).map(function (key) { return text[i][key]; });
-                    str += text[i].join("")+"</br>";
+                    str += "<li>"+text[i].join("")+"</li>";
                 }
             }
 
