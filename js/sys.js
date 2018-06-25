@@ -61,8 +61,8 @@ $('#container').on('submit', function(event) {
             $("#message").html(str);
 
             // animation
-            $("#message-container").css({"animation": "pulse 3s infinite"});
-            setTimeout(function(){ $("#message-container").css({"animation": "none", "box-shadow": "none"}); }, 3000);
+            $("#message").css({"animation": "pulse 3s infinite"});
+            setTimeout(function(){ $("#message").css({"animation": "none", "box-shadow": "none"}); }, 3000);
             $("#submitBtn").css({"animation": "pulseBtn 1.5s infinite"});
             setTimeout(function(){ $("#submitBtn").css({"animation": "none", "box-shadow": "none"}); }, 1500);
         },

@@ -6,86 +6,88 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
     <body>
-        <h1 id="title">Serve Yourself</h1>
-        <div id="message-container">
-            <p id="message" name="message"></p>
-        </div>
-        <img id="messageSpeaker" src="./img/owl2.png" alt="message">
-        
-        <div id="main">
-        <form id="container" action="/" method="post">
-            <div class="section select">
-                <h3>Simulation type</h3>
-                <select name="sim">
-                    <option value="cu_sim"> CU-sim </option>
-                    <option value="global_sim"> Global-sim</option>
-                    <option value="d_sim"> D-sim</option>
-                    <option value="fpga"> FPGA </option>
-                </select>
+        <div id="main-container">
+            <div id="message-container">
+                <p id="message" name="message"></p>
+                <img id="messageSpeaker" src="./img/owl2.png" alt="message">
             </div>
-            <div class="section select">
-                <h3>Number of CUs</h3>
-                <select name="cu_num">
-                    <option value="single"> single </option>
-                    <option value="multi"> multi</option>
-                </select>
+            <div id="form-container">
+            
+                <h1 id="title">Serve Yourself</h1>
+                <form id="container" action="/" method="post">
+                    <div class="section select">
+                        <h3>Simulation type</h3>
+                        <select name="sim">
+                            <option value="cu_sim"> CU-sim </option>
+                            <option value="global_sim"> Global-sim</option>
+                            <option value="d_sim"> D-sim</option>
+                            <option value="fpga"> FPGA </option>
+                        </select>
+                    </div>
+                    <div class="section select">
+                        <h3>Number of CUs</h3>
+                        <select name="cu_num">
+                            <option value="single"> single </option>
+                            <option value="multi"> multi</option>
+                        </select>
+                    </div>
+                    <div class="section select">
+                        <h3>Memory type</h3>
+                        <select name="mem">
+                            <option value="gm"> Turn off global-to-fast-global </option>
+                            <option value="fgm"> Turn on global-to-fast-global (force GSM) </option>
+                        </select>
+                    </div>
+                    <div class="section select">
+                        <h3>Probe</h3>
+                        <select name="probe">
+                            <option value="On"> On </option>
+                            <option value="Off"> Off </option>
+                        </select>
+                    </div>
+                    <div class="section check" id="nonConformanceSection">
+                        <h3>Non-conformance</h3>
+                        <button type="button" id="nonConformanceBtn" class="selectBtn">Select from list</button>
+                        <span id="instruction">
+                            Please use a new line to separate each parameter.
+                            <span id="popupNonCon" class="popup">
+                                [Example]
+                                <span class="popupText" id="inputFormatNonCon">multiply_short<br>multi_tracking<br>resize_short<br>enqueue_task<br>simplecl<br>...</span>
+                            </span>
+                        </span>
+                        <div id="nonConformanceDialog" class="dialog" title="Non-conformance">
+                            <p>Please select options you need. Check "<b>Select all</b>" to check all the options. Press <b>ctrl+f</b> to find options you need.</p>
+                            <label id="selectAllLabel"><input type="checkbox" id="selectAllNonId" class="selectAll" value=""><b>Select all</b></label>
+                            <table id="non_options1" class="optionList"></table>
+                            <table id="non_options2" class="optionList"></table>
+                        </div>
+                        <textarea id="showSelectedNon" name="showSelectedNon" placeholder="Nothing selected or entered"></textarea>
+                        
+                    </div>
+                    <div class="section last check" id="conformanceSection">
+                        <h3>Conformance</h3>
+                        <button type="button" id="conformanceBtn" class="selectBtn">Select from list</button>
+                        <span id="instruction">
+                            Please use a new line to separate each parameter.
+                            <span id="popupCon" class="popup">
+                                [Example]
+                                <span class="popupText" id="inputFormatCon">buffer<br>int_int_q<br>get_buffer_info<br>native_kernel<br>bool_type<br>...</span>
+                            </span>
+                        </span>
+                        <div id="conformanceDialog" class="dialog" title="Conformance">
+                            <p>Please select options you need. Check "<b>Select all</b>" to check all the options. Press <b>ctrl+f</b> to find options you need.</p>
+                            <label id="selectAllLabel"><input type="checkbox" id="selectAllId" class="selectAll" value=""><b>Select all</b></label>
+                            <table id="options1" class="optionList"></table>
+                            <table id="options2" class="optionList"></table>
+                        </div>
+                        <textarea id="showSelected" name="showSelected" placeholder="Nothing selected or entered"></textarea>
+                    </div>
+                    <div class="submit">
+                        <button id="submitBtn"> Start </button>
+                        <button id="resetBtn" type="button"> Reset </button>
+                    </div>
+                </form>
             </div>
-            <div class="section select">
-                <h3>Memory type</h3>
-                <select name="mem">
-                    <option value="gm"> Turn off global-to-fast-global </option>
-                    <option value="fgm"> Turn on global-to-fast-global (force GSM) </option>
-                </select>
-            </div>
-            <div class="section select">
-                <h3>Probe</h3>
-                <select name="probe">
-                    <option value="On"> On </option>
-                    <option value="Off"> Off </option>
-                </select>
-            </div>
-            <div class="section check" id="nonConformanceSection">
-                <h3>Non-conformance</h3>
-                <button type="button" id="nonConformanceBtn" class="selectBtn">Select from list</button>
-                <span id="instruction">
-                    Please use a new line to separate each parameter.
-                    <span id="popupNonCon" class="popup">
-                        [Example]
-                        <span class="popupText" id="inputFormatNonCon">multiply_short<br>multi_tracking<br>resize_short<br>enqueue_task<br>simplecl<br>...</span>
-                    </span>
-                </span>
-                <div id="nonConformanceDialog" class="dialog" title="Non-conformance">
-                    <p>Please select options you need. Check "<b>Select all</b>" to check all the options. Press <b>ctrl+f</b> to find options you need.</p>
-                    <label id="selectAllLabel"><input type="checkbox" id="selectAllNonId" class="selectAll" value=""><b>Select all</b></label>
-                    <table id="non_options1" class="optionList"></table>
-                    <table id="non_options2" class="optionList"></table>
-                </div>
-                <textarea id="showSelectedNon" name="showSelectedNon" placeholder="Nothing selected or entered"></textarea>
-                
-            </div>
-            <div class="section last check" id="conformanceSection">
-                <h3>Conformance</h3>
-                <button type="button" id="conformanceBtn" class="selectBtn">Select from list</button>
-                <span id="instruction">
-                    Please use a new line to separate each parameter.
-                    <span id="popupCon" class="popup">
-                        [Example]
-                        <span class="popupText" id="inputFormatCon">buffer<br>int_int_q<br>get_buffer_info<br>native_kernel<br>bool_type<br>...</span>
-                    </span>
-                </span>
-                <div id="conformanceDialog" class="dialog" title="Conformance">
-                    <p>Please select options you need. Check "<b>Select all</b>" to check all the options. Press <b>ctrl+f</b> to find options you need.</p>
-                    <label id="selectAllLabel"><input type="checkbox" id="selectAllId" class="selectAll" value=""><b>Select all</b></label>
-                    <table id="options1" class="optionList"></table>
-                    <table id="options2" class="optionList"></table>
-                </div>
-                <textarea id="showSelected" name="showSelected" placeholder="Nothing selected or entered"></textarea>
-            </div>
-            <div class="submit">
-                <button id="submitBtn"> Start </button>
-                <button id="resetBtn" type="button"> Reset </button>
-            </div>
-        </form>
         </div>
 
         <footer>&copy; Copyright 2018 Tingchu & Tienyu</footer>

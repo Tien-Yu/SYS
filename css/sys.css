@@ -5,27 +5,45 @@ body {
     background-attachment: fixed;
 }
 
+#main-container {
+    white-space: nowrap;
+    text-align: center;
+    margin: 0 20% 50px auto;
+}
+
+#form-container {
+    position: relative;
+    margin: 0 auto;
+    text-align: center;
+    display: inline-block;
+    padding-right: 100px;
+}
+
 #message-container {
+    display: inline-block;
+    position: relative;
+    bottom: 30px;
+    right: 50px;
+    padding-left: 100px;
+}
+#message {
     color: #624b0a;
     font-size: 16px;
     text-align: left;
-    width: 320px;
+    width: 420px;
     word-break: break-all;
     padding: 20px 30px;
     border-radius:40px;
     background-color: rgba(255,227,188,0.7);
-    position: fixed;
-    bottom: 500px;
-    left: 170px;
+    position: relative;
+    bottom: 50px;
     border: 2px solid #624b0a;
 }
 
 img#messageSpeaker {
-    display: inline-block;
-    width: 420px;
-    position: fixed;
-    bottom: 80px;
-    left: 70px;
+    width: 350px;
+    position: relative;
+    right: 50px;
 }
 
 li {
@@ -35,12 +53,10 @@ li {
 #container {
     text-align: left;
     width: 530px;
-    margin: 0 auto 50px;
     border-radius:10px;
     padding: 50px;
     background-color: rgba(255,255,255,0.9);
     display: inline-block;
-    margin-left: 620px;
 }
 
 @media only screen and (max-width: 1000px) {
@@ -49,6 +65,14 @@ li {
         padding-left: 35px;
         padding-right: 35px;
     }
+}
+
+h1#title {
+    font-size: 32px;
+    color: white;
+    text-align: center;
+    margin-top: 30px;
+    font-family: "HelveticaNeue","Helvetica","Arial";
 }
 
 #container div.section {
@@ -87,14 +111,6 @@ li {
 
 p {
     font-size: 17px;
-    font-family: "HelveticaNeue","Helvetica","Arial";
-}
-
-h1#title {
-    font-size: 32px;
-    color: white;
-    text-align: center;
-    margin-top: 30px;
     font-family: "HelveticaNeue","Helvetica","Arial";
 }
 
