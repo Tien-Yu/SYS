@@ -122,13 +122,13 @@ $("#showSelected").on('input', function () {
 $("#showSelectedNon").resizable({
     handles: 's',
     resize: function() {
-        $("#nonConformanceSection").height($("#showSelectedNon").height()+150);
+        $("#nonConformanceSection").height($("#showSelectedNon").height()+140);
     }
 });
 $("#showSelected").resizable({
     handles: 's',
     resize: function() {
-        $("#conformanceSection").height($("#showSelected").height()+150);
+        $("#conformanceSection").height($("#showSelected").height()+140);
     }
 });
 

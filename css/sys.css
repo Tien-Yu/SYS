@@ -18,14 +18,16 @@ body {
     text-align: center;
     display: inline-block;
     padding-right: 100px;
+    vertical-align: top;
 }
 
 #message-container {
     display: inline-block;
     position: relative;
-    bottom: 30px;
+    top: 700px;
     right: 50px;
     padding-left: 100px;
+    vertical-align: top;
 }
 #message {
     color: #624b0a;
