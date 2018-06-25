@@ -3,6 +3,7 @@ body {
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
+    font-family: "HelveticaNeue","Helvetica","Arial";
 }
 
 #main-container {
@@ -73,7 +74,6 @@ h1#title {
     color: white;
     text-align: center;
     margin-top: 30px;
-    font-family: "HelveticaNeue","Helvetica","Arial";
 }
 
 #container div.section {
@@ -112,7 +112,6 @@ h1#title {
 
 p {
     font-size: 17px;
-    font-family: "HelveticaNeue","Helvetica","Arial";
 }
 
 select {
