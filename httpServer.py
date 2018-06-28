@@ -73,10 +73,16 @@ def makeHandlerFromArguments(myServer):
                     #     self.wfile.write(itemfile.read())
             elif self.path.startswith("/data/"):
                 self.send_response(200)
-                self.send_header('Content-type','')
+                self.send_header('Content-type', '')
                 self.end_headers()
                 with open(self.path.replace("/", "", 1), "r") as itemfile:
                     self.wfile.write(itemfile.read().encode("utf-8"))
+            elif self.path == "/favicon.ico":
+                self.send_response(200)
+                self.send_header('Content-type', 'image/x-icon')
+                self.end_headers()
+                with open("favicon.ico", "rb") as ico:
+                    self.wfile.write(ico.read())
             else:
                 self.send_error(404, "Incorrect path: {}".format(self.path))
 
@@ -198,7 +204,6 @@ class SYSServer():
         cmd = self.makeCommand(simType, cuNum, mem, probe, patternType, patternList, regressPath)
         self.syslog("[Job {}][{}] Command: {}".format(self.serialNumber, clientIP, cmd))
         child = Popen(cmd.split(), stdout=PIPE)
-        # child = Popen("qq ls".split(), stdout=PIPE)
         mosesqMessage = child.stdout.readline().decode("utf-8")
         match = re.match(r"Job <(.*)> (.*)", mosesqMessage)
         mosesqID = match.group(1)
