@@ -281,10 +281,12 @@ class SYSServer():
         dictMsg[4] = {}
         dictMsg[5] = {}
         dictMsg[6] = {}
+        dictMsg[7] = {}
         currentHAVEcommitMsg = self.getLatestHAVEcommitMsg()
         msg0 = currentHAVEcommitMsg.split("|")[0]
         msg1 = currentHAVEcommitMsg.split("|")[1]
         msg2 = currentHAVEcommitMsg.split("|")[2]
+        msg3 = currentHAVEcommitMsg.split("|")[3]
         if noPatternError is True:
             dictMsg[0][0] = "No pattern selected"
         elif ip in self.clientInfo:
@@ -295,6 +297,7 @@ class SYSServer():
                 dictMsg[2][0] = msg0
                 dictMsg[3][0] = msg1
                 dictMsg[4][0] = msg2
+                dictMsg[5][0] = msg3
             else:
                 curdir = os.getcwd()
                 self.cdToRegressionPath(info.regressPath)
@@ -316,6 +319,7 @@ class SYSServer():
                     dictMsg[3][0] = msg0
                     dictMsg[4][0] = msg1
                     dictMsg[5][0] = msg2
+                    dictMsg[6][0] = msg3
                 else:
                     dictMsg[0][0] = "Currently you have {} job (ID: ".format(info.jobCount)
                     dictMsg[0][1] = "<strong>" + "{}".format(info.serialID) + "</strong>"
@@ -326,11 +330,13 @@ class SYSServer():
                     dictMsg[4][0] = msg0
                     dictMsg[5][0] = msg1
                     dictMsg[6][0] = msg2
+                    dictMsg[7][0] = msg3
         else:
             dictMsg[0][0] = "Welcome! You have no jobs currently running."
             dictMsg[1][0] = msg0
             dictMsg[2][0] = msg1
             dictMsg[3][0] = msg2
+            dictMsg[4][0] = msg3
         jsonMsg = json.dumps(dictMsg)
         print(jsonMsg)
         print(type(dictMsg))
@@ -340,21 +346,27 @@ class SYSServer():
         curdir = os.getcwd()
         prefix = "Latest HAVE commit: "
         os.chdir("/proj/mtk10109/mtk_git/have3/HAVE")
+
         process = Popen("git rev-parse HEAD".split(), stdout=PIPE)
         out, err = process.communicate()
         commit = out.decode("utf-8").strip()
+
         process2 = Popen("git log HEAD~1..HEAD --format=%cd".split(), stdout=PIPE)
         out2, err2 = process2.communicate()
         dateStr = out2.decode("utf-8").strip()
+
+        process3 = Popen("git log HEAD~1..HEAD --pretty=format:%s".split(), stdout=PIPE)
+        out3, err3 = process3.communicate()
+        title = out3.decode("utf-8").strip()
         if commit == "7d2132ccf93a160feeca1686eb44add8b5da6e00":    # jenjung's force inorder patch
             process = Popen("git rev-parse HEAD~1".split(), stdout=PIPE)
             out, err = process.communicate()
             commit = out.decode("utf-8").strip()
-            process2 = Popen("git log HEAD~1..HEAD --format=%cd".split(), stdout=PIPE)
+            process2 = Popen("git log HEAD~2..HEAD~1 --format=%cd".split(), stdout=PIPE)
             out2, err2 = process2.communicate()
             dateStr = out2.decode("utf-8").strip()
         os.chdir(curdir)
-        return "{}|{}|{}".format(prefix, commit, dateStr)
+        return "{}|{}|{}|{}".format(prefix, commit, dateStr, title)
 
     def makeCommand(self, simType, cuNum, mem, probe, patternType, patternList, regressPath):
         inputFilename = "templist" + str(self.serialNumber) + ".txt"

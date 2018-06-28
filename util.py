@@ -1,21 +1,36 @@
 import datetime
 import ftplib
 import sys
+import os
 
 def makeDestinationFullPath(ftp, sim, cuNum, patternType, serialID):
-    rootPath = "/nobackup/d_10778_t1/tingchu10778" if sim == "d_sim" else "/nobackup/d_02168_t2/tingchu02168"
+    if sim == "d_sim":
+        rootPath = "/nobackup/d_10778_t1/tingchu10778"
+    elif sim == "fpga":
+        rootPath = "/proj/mtk10109/releases/HAVE_FPGA_patterns"
+    else:
+        rootPath = "/nobackup/d_02168_t2/tingchu02168"
     dateString = datetime.datetime.today().strftime("%Y%m%d")
     cuPostfix = "single" if cuNum == "1" else "multi"
     dirname = dateString + "_" + patternType + "_" + cuPostfix + "_" + str(serialID)
     subID = 0
     flag = False
-    if remoteDirExists(ftp, rootPath, dirname):
-        dirname += "_"
-        flag = True
-    while remoteDirExists(ftp, rootPath, dirname + str(subID)):
-        subID += 1
-    if flag is True:
-        dirname += str(subID)
+    if sim == "fpga":
+        if os.path.exists(rootPath + "/" + dirname):
+            dirname += "_"
+            flag = True
+        while os.path.exists(rootPath + "/" + dirname + str(subID)):
+            subID += 1
+        if flag is True:
+            dirname += str(subID)
+    else:
+        if remoteDirExists(ftp, rootPath, dirname):
+            dirname += "_"
+            flag = True
+        while remoteDirExists(ftp, rootPath, dirname + str(subID)):
+            subID += 1
+        if flag is True:
+            dirname += str(subID)
     fullPath = rootPath + "/" + dirname
     return fullPath
 
