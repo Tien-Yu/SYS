@@ -26,13 +26,22 @@ def makeHandlerFromArguments(myServer):
             print("clientIP : {}".format(self.client_address))
             clientIP = self.client_address[0]
 
-            if self.path == "index.html":
+            if self.path == "/test":
+                self.path = "index.html"
+                self.send_response(200)
+                self.send_header('Content-type','text/html')
+                self.end_headers()
+                file = open(os.curdir + os.sep + self.path)
+                self.wfile.write(file.read().encode("utf-8"))
+                file.close()
+            elif self.path == "index.html":
                 try:
                     self.send_response(200)
                     self.send_header('Content-type','text/html')
                     self.end_headers()
                     file = open(os.curdir + os.sep + self.path)
                     self.wfile.write(file.read().encode("utf-8"))
+                    # self.wfile.write("<strong>SYS ºûÅ@¤¤¡A¹w­p14:00«ì´_</strong>".encode("Big5"))
                     file.close()
                 except IOError as ioe:
                     self.send_error(404, "Incorrect path: {}".format(self.path))
@@ -99,6 +108,7 @@ def makeHandlerFromArguments(myServer):
             value_sim = form.getvalue("sim")
             value_cu_num = form.getvalue("cu_num")
             value_mem = form.getvalue("mem")
+            value_parallel = form.getvalue("parallel")
             value_probe = form.getvalue("probe")
             value_non_conformance = form.getvalue("showSelectedNon")
             value_conformance = form.getvalue("showSelected")
@@ -126,8 +136,9 @@ def makeHandlerFromArguments(myServer):
             print(util.ColorUtil.INFO + "sim            : {}".format(value_sim))
             print(util.ColorUtil.INFO + "cu_num         : {}".format(value_cu_num))
             print(util.ColorUtil.INFO + "mem            : {}".format(value_mem))
+            print(util.ColorUtil.INFO + "parallel       : {}".format(value_parallel))
             print(util.ColorUtil.INFO + "probe          : {}".format(value_probe))
-            print(util.ColorUtil.INFO + "non          : {}".format(value_pattern_list))
+            print(util.ColorUtil.INFO + "non            : {}".format(value_pattern_list))
             #print(util.ColorUtil.INFO + "Non-Conformance: {}".format(value_non_conformance))
             #print(util.ColorUtil.INFO + "Conformance    : {}".format(value_conformance))
             # print(util.ColorUtil.INFO + "pattern list   : {}".format(value_pattern_list))
@@ -141,7 +152,7 @@ def makeHandlerFromArguments(myServer):
                     code = 404
                 else:
                     value_cu_num = "1" if value_cu_num == "single" else "2"
-                    result = self.sysServer.createChild(value_sim, value_cu_num, value_mem, probeCfg, value_pattern_type, value_pattern_list, clientIP)
+                    result = self.sysServer.createChild(value_sim, value_cu_num, value_mem, value_parallel, probeCfg, value_pattern_type, value_pattern_list, clientIP)
                     code = 200 if result == True else 507
 
                 if result == True:
@@ -191,7 +202,7 @@ class SYSServer():
         # Wait forever for incoming http requests
         server.serve_forever()
 
-    def createChild(self, simType, cuNum, mem, probe, patternType, patternList, clientIP):
+    def createChild(self, simType, cuNum, mem, parallel, probe, patternType, patternList, clientIP):
         regressPath = self.dispatchRegressionWorkspace()
         if regressPath == -1:
             dictMsg = {0: {0: "All three workspaces are busy."}}
@@ -201,7 +212,7 @@ class SYSServer():
             dictMsg = {0: {0: "You already have a job (ID: {}) running".format(self.clientInfo[clientIP].serialID)}}
             return json.dumps(dictMsg)
 
-        cmd = self.makeCommand(simType, cuNum, mem, probe, patternType, patternList, regressPath)
+        cmd = self.makeCommand(simType, cuNum, mem, probe, parallel, patternType, patternList, regressPath)
         self.syslog("[Job {}][{}] Command: {}".format(self.serialNumber, clientIP, cmd))
         child = Popen(cmd.split(), stdout=PIPE)
         mosesqMessage = child.stdout.readline().decode("utf-8")
@@ -286,12 +297,10 @@ class SYSServer():
         dictMsg[4] = {}
         dictMsg[5] = {}
         dictMsg[6] = {}
-        dictMsg[7] = {}
         currentHAVEcommitMsg = self.getLatestHAVEcommitMsg()
         msg0 = currentHAVEcommitMsg.split("|")[0]
         msg1 = currentHAVEcommitMsg.split("|")[1]
         msg2 = currentHAVEcommitMsg.split("|")[2]
-        msg3 = currentHAVEcommitMsg.split("|")[3]
         if noPatternError is True:
             dictMsg[0][0] = "No pattern selected"
         elif ip in self.clientInfo:
@@ -302,7 +311,6 @@ class SYSServer():
                 dictMsg[2][0] = msg0
                 dictMsg[3][0] = msg1
                 dictMsg[4][0] = msg2
-                dictMsg[5][0] = msg3
             else:
                 curdir = os.getcwd()
                 self.cdToRegressionPath(info.regressPath)
@@ -324,7 +332,6 @@ class SYSServer():
                     dictMsg[3][0] = msg0
                     dictMsg[4][0] = msg1
                     dictMsg[5][0] = msg2
-                    dictMsg[6][0] = msg3
                 else:
                     dictMsg[0][0] = "Currently you have {} job (ID: ".format(info.jobCount)
                     dictMsg[0][1] = "<strong>" + "{}".format(info.serialID) + "</strong>"
@@ -335,13 +342,11 @@ class SYSServer():
                     dictMsg[4][0] = msg0
                     dictMsg[5][0] = msg1
                     dictMsg[6][0] = msg2
-                    dictMsg[7][0] = msg3
         else:
             dictMsg[0][0] = "Welcome! You have no jobs currently running."
             dictMsg[1][0] = msg0
             dictMsg[2][0] = msg1
             dictMsg[3][0] = msg2
-            dictMsg[4][0] = msg3
         jsonMsg = json.dumps(dictMsg)
         print(jsonMsg)
         print(type(dictMsg))
@@ -371,9 +376,9 @@ class SYSServer():
             out2, err2 = process2.communicate()
             dateStr = out2.decode("utf-8").strip()
         os.chdir(curdir)
-        return "{}|{}|{}|{}".format(prefix, commit, dateStr, title)
+        return "{}|{}|{}".format(prefix + commit, dateStr, title)
 
-    def makeCommand(self, simType, cuNum, mem, probe, patternType, patternList, regressPath):
+    def makeCommand(self, simType, cuNum, mem, parallel, probe, patternType, patternList, regressPath):
         inputFilename = "templist" + str(self.serialNumber) + ".txt"
         if not patternList:
             inputFilename = "group_non_conformance.txt"
@@ -391,7 +396,8 @@ class SYSServer():
         if simType == "cu_sim":
             havePath = 3
         probeCfg = "-probe" if probe is True else ""
-        cmd = "mosesq time python3 genPatternFromfile.py -file {} -sim {} -cu {} -mem {} -pattern_type {} {} -delete -upload -have_path {} -regression_path {} -serialID {}".format(inputFilename, simType, cuNum, mem, patternType, probeCfg, havePath, regressPath, self.serialNumber)
+        parallelCfg = "-parallel" if parallel == "1" else ""
+        cmd = "mosesq time python3 genPatternFromfile.py -file {} -sim {} -cu {} -mem {} {} -pattern_type {} {} -delete -upload -have_path {} -regression_path {} -serialID {}".format(inputFilename, simType, cuNum, mem, parallelCfg, patternType, probeCfg, havePath, regressPath, self.serialNumber)
 
         return cmd
 
