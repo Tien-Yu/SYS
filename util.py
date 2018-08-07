@@ -4,18 +4,13 @@ import sys
 import os
 
 def makeDestinationFullPath(ftp, sim, cuNum, patternType, serialID):
-    if sim == "d_sim":
-        rootPath = "/nobackup/d_10778_t1/tingchu10778"
-    elif sim == "fpga":
-        rootPath = "/proj/mtk10109/releases/HAVE_FPGA_patterns"
-    else:
-        rootPath = "/nobackup/d_02168_t2/tingchu02168"
+    rootPath = getRootPath(sim)
     dateString = datetime.datetime.today().strftime("%Y%m%d")
     cuPostfix = "single" if cuNum == "1" else "multi"
     dirname = dateString + "_" + patternType + "_" + cuPostfix + "_" + str(serialID)
     subID = 0
     flag = False
-    if sim == "fpga":
+    if sim == "fpga" or sim == "dbg_info":
         if os.path.exists(rootPath + "/" + dirname):
             dirname += "_"
             flag = True
@@ -45,6 +40,17 @@ def remoteDirExists(ftp, rootPath, dirname):
             return True
     ftp.cwd(currentDir)
     return False
+
+def getRootPath(sim):
+    if sim == "d_sim":
+        rootPath = "/nobackup/d_10778_t1/tingchu10778"
+    elif sim == "fpga":
+        rootPath = "/proj/mtk10109/releases/HAVE_FPGA_patterns"
+    elif sim == "dbg_info":
+        rootPath = "/proj/mtk10109/releases/HAVE_debugger_info"
+    else:
+        rootPath = "/nobackup/d_02168_t2/tingchu02168"
+    return rootPath
 
 def printStderr(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)

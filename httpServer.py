@@ -41,7 +41,7 @@ def makeHandlerFromArguments(myServer):
                     self.end_headers()
                     file = open(os.curdir + os.sep + self.path)
                     self.wfile.write(file.read().encode("utf-8"))
-                    # self.wfile.write("<strong>SYS 維護中，預計14:00恢復</strong>".encode("Big5"))
+                    # self.wfile.write("<strong>SYS 維護中，預計2018/8/6 17:00恢復，任何問題請聯絡 Tingchu</strong>".encode("Big5"))
                     file.close()
                 except IOError as ioe:
                     self.send_error(404, "Incorrect path: {}".format(self.path))
@@ -139,8 +139,8 @@ def makeHandlerFromArguments(myServer):
             print(util.ColorUtil.INFO + "parallel       : {}".format(value_parallel))
             print(util.ColorUtil.INFO + "probe          : {}".format(value_probe))
             print(util.ColorUtil.INFO + "non            : {}".format(value_pattern_list))
-            #print(util.ColorUtil.INFO + "Non-Conformance: {}".format(value_non_conformance))
-            #print(util.ColorUtil.INFO + "Conformance    : {}".format(value_conformance))
+            # print(util.ColorUtil.INFO + "Non-Conformance: {}".format(value_non_conformance))
+            # print(util.ColorUtil.INFO + "Conformance    : {}".format(value_conformance))
             # print(util.ColorUtil.INFO + "pattern list   : {}".format(value_pattern_list))
 
             if self.path == "index.html":
@@ -378,7 +378,7 @@ class SYSServer():
         os.chdir(curdir)
         return "{}|{}|{}".format(prefix + commit, dateStr, title)
 
-    def makeCommand(self, simType, cuNum, mem, parallel, probe, patternType, patternList, regressPath):
+    def makeCommand(self, simType, cuNum, mem, probe, parallel, patternType, patternList, regressPath):
         inputFilename = "templist" + str(self.serialNumber) + ".txt"
         if not patternList:
             inputFilename = "group_non_conformance.txt"
