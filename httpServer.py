@@ -203,6 +203,8 @@ class SYSServer():
         server.serve_forever()
 
     def createChild(self, simType, cuNum, mem, parallel, probe, patternType, patternList, clientIP):
+        if isDevMode():
+            return True
         regressPath = self.dispatchRegressionWorkspace()
         if regressPath == -1:
             dictMsg = {0: {0: "All three workspaces are busy."}}
@@ -356,6 +358,8 @@ class SYSServer():
         return jsonMsg
 
     def getLatestHAVEcommitMsg(self):
+        if util.isDevMode():
+            return "AA|BB|CC"
         curdir = os.getcwd()
         prefix = "Latest HAVE commit: "
         os.chdir("/proj/mtk10109/mtk_git/have3/HAVE")

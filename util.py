@@ -3,6 +3,9 @@ import ftplib
 import sys
 import os
 
+def isDevMode():
+    return True
+
 def makeDestinationFullPath(ftp, sim, cuNum, patternType, serialID):
     rootPath = getRootPath(sim)
     dateString = datetime.datetime.today().strftime("%Y%m%d")
