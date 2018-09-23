@@ -52,6 +52,9 @@ def getRootPath(sim):
         rootPath = "/nobackup/d_02168_t2/tingchu02168"
     return rootPath
 
+def ftpPassword():
+    return "dummy"
+
 def printStderr(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 

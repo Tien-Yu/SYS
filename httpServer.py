@@ -41,7 +41,7 @@ def makeHandlerFromArguments(myServer):
                     self.end_headers()
                     file = open(os.curdir + os.sep + self.path)
                     self.wfile.write(file.read().encode("utf-8"))
-                    # self.wfile.write("<strong>SYS ∫˚≈@§§°Aπw≠p2018/8/6 17:00´Ï¥_°A•Ù¶Û∞›√DΩ–¡pµ∏ Tingchu</strong>".encode("Big5"))
+                    # self.wfile.write("<strong> MVPU Pattern Vending Machine Á∂≠Ë≠∑‰∏≠ÔºåÈ†êË®à2018/8/6 17:00ÊÅ¢Âæ©Ôºå‰ªª‰ΩïÂïèÈ°åË´ãËÅØÁµ° Tingchu</strong>".encode("Big5"))
                     file.close()
                 except IOError as ioe:
                     self.send_error(404, "Incorrect path: {}".format(self.path))
@@ -220,14 +220,17 @@ class SYSServer():
         mosesqID = match.group(1)
 
         projectID = "10778" if simType == "d_sim" else "02168"
-        ftp = ftplib.FTP("Mtkftp1")
-        ftp.login("tingchu" + projectID, "mediatek")
+        ftp = None
+        if simType != "fpga" and simType != "dbg_info":
+            ftp = ftplib.FTP("Mtkftp1")
+            ftp.login("tingchu" + projectID, util.ftpPassword())
         self.clientInfo[clientIP].destDir = util.makeDestinationFullPath(ftp, simType, cuNum, patternType, self.serialNumber)
         self.clientInfo[clientIP].process = child
         self.clientInfo[clientIP].mosesqJobID = mosesqID
         self.clientInfo[clientIP].patternCount = len(patternList)
         self.serialNumber += 1
-        ftp.quit()
+        if simType != "fpga" and simType != "dbg_info":
+            ftp.quit()
         self.syslog("Destination path: {}".format(self.clientInfo[clientIP].destDir))
         return True
 
@@ -323,7 +326,7 @@ class SYSServer():
 
                 os.chdir(curdir)
                 if isPost is True:
-                    dictMsg[0][0] = "SYS received your job, ID: "
+                    dictMsg[0][0] = "MVPU PVM received your job, ID: "
                     dictMsg[0][1] = "<strong>" + "{}".format(info.serialID) + "</strong>"
                     dictMsg[0][2] = "."
                     dictMsg[1][0] = "Patterns processed/total : <strong>{} / {}</strong>".format(processedPatternCount, info.patternCount)
@@ -393,8 +396,8 @@ class SYSServer():
             os.chdir(curdir)
 
         havePath = 2
-        if simType == "cu_sim":
-            havePath = 3
+        # if simType == "cu_sim":
+        #     havePath = 3
         probeCfg = "-probe" if probe is True else ""
         parallelCfg = "-parallel" if parallel == "1" else ""
         cmd = "mosesq time python3 genPatternFromfile.py -file {} -sim {} -cu {} -mem {} {} -pattern_type {} {} -delete -upload -have_path {} -regression_path {} -serialID {}".format(inputFilename, simType, cuNum, mem, parallelCfg, patternType, probeCfg, havePath, regressPath, self.serialNumber)
