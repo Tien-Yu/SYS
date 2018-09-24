@@ -112,7 +112,7 @@ def makeHandlerFromArguments(myServer):
             value_probe = form.getvalue("probe")
             value_non_conformance = form.getvalue("showSelectedNon")
             value_conformance = form.getvalue("showSelected")
-            value_uploadFileNmae = form.getvalue("uploadFileNmae")
+            value_uploadFileName = form.getvalue("uploadFileName")
             ##########################################
 
             # value_pattern_list = value_non_conformance.split(", ")
@@ -144,7 +144,7 @@ def makeHandlerFromArguments(myServer):
             # print(util.ColorUtil.INFO + "Conformance    : {}".format(value_conformance))
             # print(util.ColorUtil.INFO + "pattern list   : {}".format(value_pattern_list))
 
-            if value_uploadFileNmae is not None:
+            if value_uploadFileName is not None:
                 self.handleFileUploads()
                 
 
@@ -202,7 +202,7 @@ def makeHandlerFromArguments(myServer):
                 return False
             else:
                 filename = filename[0]
-            dstFolder = "/proj/mtk10109/mtk_git/SYS" if isDevMode() else "/change_it"
+            dstFolder = "/upload_files" if isDevMode() else "/proj/mtk10109/mtk_git/SYS"
             filepath = os.path.join(dstFolder, filename)
             try:
                 dstFile = open(filepath, "wb")
