@@ -73,7 +73,7 @@
                         <textarea id="showSelectedNon" name="showSelectedNon" placeholder="Nothing selected or entered"></textarea>
                         
                     </div>
-                    <div class="section last check" id="conformanceSection">
+                    <div class="section check" id="conformanceSection">
                         <h3>Conformance</h3>
                         <button type="button" id="conformanceBtn" class="selectBtn">Select from list</button>
                         <span id="instruction">
@@ -91,6 +91,15 @@
                         </div>
                         <textarea id="showSelected" name="showSelected" placeholder="Nothing selected or entered"></textarea>
                     </div>
+                    <div class="section last" id="upload">
+                        <h3>Upload file</h3>
+                        <div id="dropzone_element" class="dropzone">
+                            Drop files here to upload
+                        </div>
+                        
+                        <div id="upload_results_element">
+                        </div>
+                    </div>
                     <div class="submit">
                         <button id="submitBtn"> Start </button>
                         <button id="resetBtn" type="button"> Reset </button>
@@ -105,6 +114,7 @@
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
         <script type="text/javascript" src="./js/sys.js"></script>
+        <script src="./js/dropzone.js"></script>
     </body>
 </html>
 <!-- 
