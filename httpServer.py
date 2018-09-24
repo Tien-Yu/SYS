@@ -112,6 +112,7 @@ def makeHandlerFromArguments(myServer):
             value_probe = form.getvalue("probe")
             value_non_conformance = form.getvalue("showSelectedNon")
             value_conformance = form.getvalue("showSelected")
+            value_uploadFileNmae = form.getvalue("uploadFileNmae")
             ##########################################
 
             # value_pattern_list = value_non_conformance.split(", ")
@@ -143,6 +144,10 @@ def makeHandlerFromArguments(myServer):
             # print(util.ColorUtil.INFO + "Conformance    : {}".format(value_conformance))
             # print(util.ColorUtil.INFO + "pattern list   : {}".format(value_pattern_list))
 
+            if value_uploadFileNmae is not None:
+                self.handleFileUploads()
+                
+
             if self.path == "index.html":
                 clientIP = self.client_address[0]
                 result = {} # result below should be a 2D json, for javascript
@@ -170,6 +175,55 @@ def makeHandlerFromArguments(myServer):
                     self.wfile.write(result.encode("utf-8"))
             else:
                 self.send_error(404, "Incorrect path: {}".format(self.path))
+
+        def readOneLine(self):
+            line = self.rfile.readline().decode('utf-8')
+            return line
+
+        def handleFileUploads(self):
+            # Reference: https://gist.github.com/MichaelCurrie/19394abc19abd0de4473b595c0e37a3a
+            # header:
+            # 'multipart/form-data; boundary=----WebKitFormBoundaryUI1LY7c2BiEKGfFk'
+            # content:
+            # ------WebKitFormBoundaryKQmJspFGuk6ldLEa
+            # Content-Disposition: form-data; name="file"; filename="owl2.png"
+            # Content-Type: image/png
+            # ...
+            # ------WebKitFormBoundaryKQmJspFGuk6ldLEa--
+            boundary = self.headers['content-type'].split("=")[1]
+            line = self.readOneLine()    # ------WebKitFormBoundaryKQmJspFGuk6ldLEa
+            if not boundary in line:
+                print("Content did not start with boundary as it should!")
+                return False
+            line = self.readOneLine()    # Content-Disposition:            
+            filename = re.findall('Content-Disposition.*name="file"; filename="(.*)"', line)
+            if not filename:
+                print("filename not found!")
+                return False
+            else:
+                filename = filename[0]
+            dstFolder = "/proj/mtk10109/mtk_git/SYS" if isDevMode() else "/change_it"
+            filepath = os.path.join(dstFolder, filename)
+            try:
+                dstFile = open(filepath, "wb")
+            except IOError:
+                print("Cannot open file " + filepath)
+                return False
+            line = self.readOneLine()       # Content-Type
+            line = self.readOneLine()       # Blank line
+            preLine = self.readOneLine()    # real data
+            while True:
+                line = self.readOneLine()   # real data or boundary
+                if boundary in line:
+                    preline = preline[0:-1]
+                    if preline.endswith("\r"):
+                        preline = preline[0:-1]
+                    dstFile.write(preline.encode("utf-8"))
+                    dstFile.close()
+                    break
+                else:
+                    dstFile.write(preLine.encode("utf-8"))
+                    preLine = line
 
     return RequestHandler
 
