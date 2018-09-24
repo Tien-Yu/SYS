@@ -93,9 +93,11 @@
                     </div>
                     <div class="section last" id="upload">
                         <h3>Upload file</h3>
-                        <div id="dropzone_element" class="dropzone">
-                            Drop files here to upload
-                        </div>
+                        <label for="uploadBtn" class="selectBtn">Choose file</label>
+                        <input type="file" id="uploadBtn" class="selectBtn" style="visibility:hidden;" >
+                        <textarea id="dropzone_element" class="dropzone" name="uploadFileName">
+                            Drag and Drop file here
+                        </textarea>
                         
                         <div id="upload_results_element">
                         </div>

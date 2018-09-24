@@ -11,6 +11,7 @@ if(document.readyState === "complete") {
 
 function createDropzoneMethods() {
     let dropzone = document.getElementById("dropzone_element");
+    let chooseFileBtn = document.getElementById("uploadBtn");
 
     dropzone.ondragover = function() {
         this.className = "dropzone dragover";
@@ -28,8 +29,15 @@ function createDropzoneMethods() {
         // Restore original dropzone appearance
         this.className = "dropzone";
 
-        upload_files(e.dataTransfer.files)
-    }    
+        upload_files(e.dataTransfer.files);
+        console.log(e.dataTransfer.files);
+    }
+
+    chooseFileBtn.onchange = function(e) {
+        console.log(this.files);
+        document.getElementById("dropzone_element").innerHTML = this.files[0].name;
+        upload_files(this.files);
+    }  
 }
 
 function upload_files(files) {
@@ -48,10 +56,10 @@ function upload_files(files) {
         }
 
         console.log(xhr.response);
-        upload_results.innerHTML = this.response;
+        //upload_results.innerHTML = this.response;
     }
 
     console.log("Let's upload files: ", formData);
-    xhr.open('POST', 'upload_handler.py', true); // async = true
+    xhr.open('POST', '/', true); // async = true
     xhr.send(formData); 
 }
