@@ -4,99 +4,92 @@
         <link rel="stylesheet" type="text/css" href="./js/jquery-ui-1.12.1/jquery-ui.css">
         <link rel="stylesheet" type="text/css" href="./css/sys.css">
         <link rel="icon" type="image/x-icon" href="./favicon.ico" />
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     </head>
     <body>
-        <div id="main-container">
-            <div id="message-container">
-                <p id="message" name="message"></p>
-                <img id="messageSpeaker" src="./img/owl2.png" alt="message">
-            </div>
-            <div id="form-container">
-            
-                <h1 id="title">MVPU Pattern Vending Machine</h1>
-                <form id="container" action="/" method="post">
-                    <div class="section select">
-                        <h3>Simulation type</h3>
-                        <select name="sim">
-                            <option value="cu_sim"> CU-sim </option>
-                            <option value="global_sim"> Global-sim</option>
-                            <option value="d_sim"> D-sim</option>
-                            <option value="fpga"> FPGA </option>
-                            <option value="dbg_info"> Debug info </option>
-                        </select>
-                    </div>
-                    <div class="section select">
-                        <h3>Number of CUs</h3>
-                        <select name="cu_num">
-                            <option value="single"> single </option>
-                            <option value="multi"> multi</option>
-                        </select>
-                    </div>
-                    <div class="section select">
-                        <h3>Memory type</h3>
-                        <select name="mem">
-                            <option value="gm"> Remain unchanged </option>
-                            <option value="fgm"> Force in/out to GSM </option>
-                        </select>
-                    </div>
-                    <div class="section select">
-                        <h3>Sequential option</h3>
-                        <select name="parallel">
-                            <option value="1"> Not sequential (Default) </option>
-                            <option value="0"> Sequential </option>
-                        </select>
-                    </div>
-                    <div class="section select">
-                        <h3>Probe</h3>
-                        <select name="probe">
-                            <option value="On"> On </option>
-                            <option value="Off"> Off </option>
-                        </select>
-                    </div>
-                    <div class="section check" id="nonConformanceSection">
-                        <h3>Non-conformance</h3>
-                        <button type="button" id="nonConformanceBtn" class="selectBtn">Select from list</button>
-                        <span id="instruction">
-                            Please use a new line to separate each parameter.
-                            <span id="popupNonCon" class="popup">
-                                [Example]
-                                <span class="popupText" id="inputFormatNonCon">multiply_short<br>multi_tracking<br>resize_short<br>enqueue_task<br>simplecl<br>...</span>
-                            </span>
-                        </span>
-                        <div id="nonConformanceDialog" class="dialog" title="Non-conformance">
-                            <p>Please select options you need. Check "<b>Select all</b>" to check all the options. Press <b>ctrl+f</b> to find options you need.</p>
-                            <label id="selectAllLabel"><input type="checkbox" id="selectAllNonId" class="selectAll" value=""><b>Select all</b></label>
-                            <table id="non_options1" class="optionList"></table>
-                            <table id="non_options2" class="optionList"></table>
+        <div class="container">
+            <h1>MVPU Pattern Vending Machine</h1>
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card">
+                        <h5 class="card-header">Featured</h5>
+                        <div class="card-body">
+                            <select class="form-control">
+                                <option value="cu_sim"> CU-sim </option>
+                                <option value="global_sim"> Global-sim</option>
+                                <option value="d_sim"> D-sim</option>
+                                <option value="fpga"> FPGA </option>
+                                <option value="dbg_info"> Debug info </option>
+                            </select>
                         </div>
-                        <textarea id="showSelectedNon" name="showSelectedNon" placeholder="Nothing selected or entered"></textarea>
-                        
                     </div>
-                    <div class="section last check" id="conformanceSection">
-                        <h3>Conformance</h3>
-                        <button type="button" id="conformanceBtn" class="selectBtn">Select from list</button>
-                        <span id="instruction">
-                            Please use a new line to separate each parameter.
-                            <span id="popupCon" class="popup">
-                                [Example]
-                                <span class="popupText" id="inputFormatCon">buffer<br>int_int_q<br>get_buffer_info<br>native_kernel<br>bool_type<br>...</span>
-                            </span>
-                        </span>
-                        <div id="conformanceDialog" class="dialog" title="Conformance">
-                            <p>Please select options you need. Check "<b>Select all</b>" to check all the options. Press <b>ctrl+f</b> to find options you need.</p>
-                            <label id="selectAllLabel"><input type="checkbox" id="selectAllId" class="selectAll" value=""><b>Select all</b></label>
-                            <table id="options1" class="optionList"></table>
-                            <table id="options2" class="optionList"></table>
+                </div>
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card">
+                        <h5 class="card-header">Featured</h5>
+                        <div class="card-body">
+                            <select class="form-control">
+                              <option>Default select</option>
+                            </select>
                         </div>
-                        <textarea id="showSelected" name="showSelected" placeholder="Nothing selected or entered"></textarea>
                     </div>
-                    <div class="submit">
-                        <button id="submitBtn"> Start </button>
-                        <button id="resetBtn" type="button"> Reset </button>
+                </div>
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card">
+                        <h5 class="card-header">Featured</h5>
+                        <div class="card-body">
+                            <select class="form-control">
+                              <option>Default select</option>
+                            </select>
+                        </div>
                     </div>
-                </form>
+                </div>
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card">
+                        <h5 class="card-header">Featured</h5>
+                        <div class="card-body">
+                            <select class="form-control">
+                              <option>Default select</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card">
+                        <h5 class="card-header">Featured</h5>
+                        <div class="card-body">
+                            <select class="form-control">
+                              <option>Default select</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
             </div>
+            <div class="row">
+                <div class="col-lg-6 col-md-12 mb-4">
+                    <div class="card">
+                        <h5 class="card-header">Featured</h5>
+                        <div class="card-body">
+                            <button type="button" class="btn btn-warning">Select from list</button>
+                            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-12 mb-4">
+                    <div class="card">
+                        <h5 class="card-header">Featured</h5>
+                        <div class="card-body">
+                            <button type="button" class="btn btn-warning">Select from list</button>
+                            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         <footer>&copy; Copyright 2018 Tingchu & Tienyu</footer>
