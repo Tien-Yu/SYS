@@ -41,7 +41,7 @@ def makeHandlerFromArguments(myServer):
                     self.end_headers()
                     file = open(os.curdir + os.sep + self.path)
                     self.wfile.write(file.read().encode("utf-8"))
-                    # self.wfile.write("<strong> MVPU Pattern Vending Machine 維護中，預計2018/8/6 17:00恢復，任何問題請聯絡 Tingchu</strong>".encode("Big5"))
+                    # self.wfile.write("<strong> MVPU Pattern Vending Machine 維護中，預計2018/11/20 14:00恢復，任何問題請聯絡 Tingchu</strong>".encode("Big5"))
                     file.close()
                 except IOError as ioe:
                     self.send_error(404, "Incorrect path: {}".format(self.path))
@@ -109,6 +109,8 @@ def makeHandlerFromArguments(myServer):
             value_cu_num = form.getvalue("cu_num")
             value_mem = form.getvalue("mem")
             value_parallel = form.getvalue("parallel")
+            value_invalidate_icache = form.getvalue("invalidate_icache")
+            value_init_reg = form.getvalue("init_reg")
             value_probe = form.getvalue("probe")
             value_non_conformance = form.getvalue("showSelectedNon")
             value_conformance = form.getvalue("showSelected")
@@ -132,13 +134,15 @@ def makeHandlerFromArguments(myServer):
             value_pattern_list = list(filter(None, value_pattern_list))
             probeCfg = True if value_probe == "On" else False
 
-            print(util.ColorUtil.INFO + "clientIP       : {}".format(self.client_address))
-            print(util.ColorUtil.INFO + "sim            : {}".format(value_sim))
-            print(util.ColorUtil.INFO + "cu_num         : {}".format(value_cu_num))
-            print(util.ColorUtil.INFO + "mem            : {}".format(value_mem))
-            print(util.ColorUtil.INFO + "parallel       : {}".format(value_parallel))
-            print(util.ColorUtil.INFO + "probe          : {}".format(value_probe))
-            print(util.ColorUtil.INFO + "non            : {}".format(value_pattern_list))
+            print(util.ColorUtil.INFO + "clientIP          : {}".format(self.client_address))
+            print(util.ColorUtil.INFO + "sim               : {}".format(value_sim))
+            print(util.ColorUtil.INFO + "cu_num            : {}".format(value_cu_num))
+            print(util.ColorUtil.INFO + "mem               : {}".format(value_mem))
+            print(util.ColorUtil.INFO + "parallel          : {}".format(value_parallel))
+            print(util.ColorUtil.INFO + "invalidate_icache : {}".format(value_invalidate_icache))
+            print(util.ColorUtil.INFO + "init_reg          : {}".format(value_init_reg))
+            print(util.ColorUtil.INFO + "probe             : {}".format(value_probe))
+            print(util.ColorUtil.INFO + "non               : {}".format(value_pattern_list))
             # print(util.ColorUtil.INFO + "Non-Conformance: {}".format(value_non_conformance))
             # print(util.ColorUtil.INFO + "Conformance    : {}".format(value_conformance))
             # print(util.ColorUtil.INFO + "pattern list   : {}".format(value_pattern_list))
@@ -152,7 +156,7 @@ def makeHandlerFromArguments(myServer):
                     code = 404
                 else:
                     value_cu_num = "1" if value_cu_num == "single" else "2"
-                    result = self.sysServer.createChild(value_sim, value_cu_num, value_mem, value_parallel, probeCfg, value_pattern_type, value_pattern_list, clientIP)
+                    result = self.sysServer.createChild(value_sim, value_cu_num, value_mem, value_parallel, value_invalidate_icache, value_init_reg, probeCfg, value_pattern_type, value_pattern_list, clientIP)
                     code = 200 if result == True else 507
 
                 if result == True:
@@ -181,14 +185,18 @@ class SYSServer():
         self.logfile = open("sys.log", "a")
         self.stop = False
         self.serialNumber = 0
+        self.lock = False
+        self.haveUpdated = False
+        self.lastHaveUpdateTime = ""
 
     def start(self):
         try:
             serverThread = Thread(target=self.startServer, args=[])
             serverThread.start()
             while self.stop is False:
-                time.sleep(2)
+                time.sleep(3)
                 self.pollChildren()
+                self.tryUpdateHAVE()
 
         except KeyboardInterrupt:
             print("\n" + util.ColorUtil.INFO + "Close server")
@@ -202,10 +210,15 @@ class SYSServer():
         # Wait forever for incoming http requests
         server.serve_forever()
 
-    def createChild(self, simType, cuNum, mem, parallel, probe, patternType, patternList, clientIP):
-        if isDevMode():
+    def createChild(self, simType, cuNum, mem, parallel, invalidateIcache, initReg, probe, patternType, patternList, clientIP):
+        if util.isDevMode():
             return True
-        regressPath = self.dispatchRegressionWorkspace()
+
+        if self.lock is True:
+            dictMsg = {0: {0: "Pattern Vending Machine is updating HAVE codebase. Please hold on a minute."}}
+            return json.dumps(dictMsg)
+
+        regressPath = self.getAvailableRegressionWorkspace()
         if regressPath == -1:
             dictMsg = {0: {0: "All three workspaces are busy."}}
             return json.dumps(dictMsg)
@@ -214,7 +227,7 @@ class SYSServer():
             dictMsg = {0: {0: "You already have a job (ID: {}) running".format(self.clientInfo[clientIP].serialID)}}
             return json.dumps(dictMsg)
 
-        cmd = self.makeCommand(simType, cuNum, mem, probe, parallel, patternType, patternList, regressPath)
+        cmd = self.makeCommand(simType, cuNum, mem, probe, parallel, invalidateIcache, initReg, patternType, patternList, regressPath)
         self.syslog("[Job {}][{}] Command: {}".format(self.serialNumber, clientIP, cmd))
         child = Popen(cmd.split(), stdout=PIPE)
         mosesqMessage = child.stdout.readline().decode("utf-8")
@@ -301,11 +314,12 @@ class SYSServer():
         dictMsg[3] = {}
         dictMsg[4] = {}
         dictMsg[5] = {}
-        dictMsg[6] = {}
+        # dictMsg[6] = {}
         currentHAVEcommitMsg = self.getLatestHAVEcommitMsg()
-        msg0 = currentHAVEcommitMsg.split("|")[0]
-        msg1 = currentHAVEcommitMsg.split("|")[1]
-        msg2 = currentHAVEcommitMsg.split("|")[2]
+        msg0 = currentHAVEcommitMsg
+        # msg0 = currentHAVEcommitMsg.split("|")[0]
+        # msg1 = currentHAVEcommitMsg.split("|")[1]
+        # msg2 = currentHAVEcommitMsg.split("|")[2]
         if noPatternError is True:
             dictMsg[0][0] = "No pattern selected"
         elif ip in self.clientInfo:
@@ -314,8 +328,9 @@ class SYSServer():
                 dictMsg[0][0] = "Welcome back! You have no jobs in progress. Previous pattern locations: "
                 dictMsg[1][0] = "<strong>" + info.destDir + "</strong>"
                 dictMsg[2][0] = msg0
-                dictMsg[3][0] = msg1
-                dictMsg[4][0] = msg2
+                # dictMsg[3][0] = msg1
+                dictMsg[3][0] = "HAVE last update: " + self.lastHaveUpdateTime
+                # dictMsg[4][0] = msg2
             else:
                 curdir = os.getcwd()
                 self.cdToRegressionPath(info.regressPath)
@@ -335,8 +350,9 @@ class SYSServer():
                     dictMsg[2][0] = "You'll get your patterns in "
                     dictMsg[2][1] = "<strong>" + info.destDir + "</strong>"
                     dictMsg[3][0] = msg0
-                    dictMsg[4][0] = msg1
-                    dictMsg[5][0] = msg2
+                    # dictMsg[4][0] = msg1
+                    dictMsg[4][0] = "HAVE last update: " + self.lastHaveUpdateTime
+                    # dictMsg[5][0] = msg2
                 else:
                     dictMsg[0][0] = "Currently you have {} job (ID: ".format(info.jobCount)
                     dictMsg[0][1] = "<strong>" + "{}".format(info.serialID) + "</strong>"
@@ -345,17 +361,52 @@ class SYSServer():
                     dictMsg[2][0] = "You'll get your patterns in "
                     dictMsg[3][0] = "<strong>" + info.destDir + "</strong>"
                     dictMsg[4][0] = msg0
-                    dictMsg[5][0] = msg1
-                    dictMsg[6][0] = msg2
+                    # dictMsg[5][0] = msg1
+                    dictMsg[5][0] = "HAVE last update: " + self.lastHaveUpdateTime
+                    # dictMsg[6][0] = msg2
         else:
             dictMsg[0][0] = "Welcome! You have no jobs currently running."
             dictMsg[1][0] = msg0
-            dictMsg[2][0] = msg1
-            dictMsg[3][0] = msg2
+            # dictMsg[2][0] = msg1
+            dictMsg[2][0] = "HAVE last update: " + self.lastHaveUpdateTime
+            # dictMsg[3][0] = msg2
         jsonMsg = json.dumps(dictMsg)
         print(jsonMsg)
         print(type(dictMsg))
         return jsonMsg
+
+    def tryUpdateHAVE(self):
+        timeStr = time.strftime("%H", time.localtime())
+        if timeStr != "13" and timeStr != "03":
+            self.haveUpdated = False        # Clear updated flag at all time except 12PM and 3AM
+            return
+        else:
+            if self.haveUpdated is True:    # At 13:XX and 03:XX, but HAVE codebase has been updated
+                return
+            else:                           # Try updating HAVE codebase at 13 and 3 o'clock
+                self.haveUpdated = True
+
+        if not self.allWorkspaceEmpty():    # Someone is using Vending Machine
+            return
+
+        self.lock = True
+        print(util.ColorUtil.INFO + "Updating HAVE...")
+        curdir = os.getcwd()
+        os.chdir("/proj/mtk10109/mtk_git/have3/HAVE/script")
+
+        os.system("git remote update")
+        process = Popen("git status -uno".split(), stdout=PIPE)
+        out, err = process.communicate()
+
+        os.chdir(curdir)
+
+        if "behind" in out.decode("utf-8"):
+            print(util.ColorUtil.INFO + "Start fetching and building new codes")
+            os.system("git pull --rebase")
+            os.system("mosesq /proj/mtk10109/mtk_git/have3/HAVE/script/build_linux.sh -os linux -target x86_64 -ide nope Release_SO -e1 -all -q")
+        print(util.ColorUtil.INFO + "Updated.")
+        self.lastHaveUpdateTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        self.lock = False
 
     def getLatestHAVEcommitMsg(self):
         if util.isDevMode():
@@ -368,24 +419,26 @@ class SYSServer():
         out, err = process.communicate()
         commit = out.decode("utf-8").strip()
 
-        process2 = Popen("git log HEAD~1..HEAD --format=%cd".split(), stdout=PIPE)
-        out2, err2 = process2.communicate()
-        dateStr = out2.decode("utf-8").strip()
+        # process2 = Popen("git log HEAD~1..HEAD --format=%cd".split(), stdout=PIPE)
+        # out2, err2 = process2.communicate()
+        # dateStr = out2.decode("utf-8").strip()
 
         process3 = Popen("git log HEAD~1..HEAD --pretty=format:%s".split(), stdout=PIPE)
         out3, err3 = process3.communicate()
-        title = out3.decode("utf-8").strip()
+        # title = out3.decode("utf-8").strip()
         if commit == "7d2132ccf93a160feeca1686eb44add8b5da6e00":    # jenjung's force inorder patch
             process = Popen("git rev-parse HEAD~1".split(), stdout=PIPE)
             out, err = process.communicate()
             commit = out.decode("utf-8").strip()
-            process2 = Popen("git log HEAD~2..HEAD~1 --format=%cd".split(), stdout=PIPE)
-            out2, err2 = process2.communicate()
-            dateStr = out2.decode("utf-8").strip()
+            # process2 = Popen("git log HEAD~2..HEAD~1 --format=%cd".split(), stdout=PIPE)
+            # out2, err2 = process2.communicate()
+            # dateStr = out2.decode("utf-8").strip()
         os.chdir(curdir)
-        return "{}|{}|{}".format(prefix + commit, dateStr, title)
+        # dateStr.replace(" +0800", "")
+        # return "{}|{}".format(prefix + commit, dateStr)
+        return "{}".format(prefix + commit)
 
-    def makeCommand(self, simType, cuNum, mem, probe, parallel, patternType, patternList, regressPath):
+    def makeCommand(self, simType, cuNum, mem, probe, parallel, invalidateIcache, initReg, patternType, patternList, regressPath):
         inputFilename = "templist" + str(self.serialNumber) + ".txt"
         if not patternList:
             inputFilename = "group_non_conformance.txt"
@@ -404,7 +457,9 @@ class SYSServer():
         #     havePath = 3
         probeCfg = "-probe" if probe is True else ""
         parallelCfg = "-parallel" if parallel == "1" else ""
-        cmd = "mosesq time python3 genPatternFromfile.py -file {} -sim {} -cu {} -mem {} {} -pattern_type {} {} -delete -upload -have_path {} -regression_path {} -serialID {}".format(inputFilename, simType, cuNum, mem, parallelCfg, patternType, probeCfg, havePath, regressPath, self.serialNumber)
+        invalidateIcacheCfg = "-invalidate_icache" if invalidateIcache == "1" else ""
+        initRegCfg = "-init_reg" if initReg == "1" else ""
+        cmd = "mosesq time python3 genPatternFromfile.py -file {} -sim {} -cu {} -mem {} {} {} {} -pattern_type {} {} -delete -upload -have_path {} -regression_path {} -serialID {}".format(inputFilename, simType, cuNum, mem, parallelCfg, invalidateIcacheCfg, initRegCfg, patternType, probeCfg, havePath, regressPath, self.serialNumber)
 
         return cmd
 
@@ -426,7 +481,10 @@ class SYSServer():
             print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
             print(message)
 
-    def dispatchRegressionWorkspace(self):
+    def allWorkspaceEmpty(self):
+        return (not os.listdir("../HAVE-Regression/out/")) and (not os.listdir("../regression2/HAVE-Regression/out"))
+
+    def getAvailableRegressionWorkspace(self):
         if not os.listdir("../HAVE-Regression/out/"):    # workspace 0 is empty, available
             return 0
         elif not os.listdir("../regression2/HAVE-Regression/out"): # workspace 1 is empty, available

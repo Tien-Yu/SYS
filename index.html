@@ -19,24 +19,24 @@
                     <div class="section select">
                         <h3>Simulation type</h3>
                         <select name="sim">
-                            <option value="cu_sim"> CU-sim </option>
-                            <option value="global_sim"> Global-sim</option>
-                            <option value="d_sim"> D-sim</option>
+                            <option value="global_sim"> Global-sim (HW)</option>
+                            <option value="cu_sim"> CU-sim (HW)</option>
+                            <option value="d_sim"> D-sim (HW)</option>
                             <option value="fpga"> FPGA </option>
-                            <option value="dbg_info"> Debug info </option>
+                            <option value="dbg_info"> Debug info (SW)</option>
                         </select>
                     </div>
                     <div class="section select">
                         <h3>Number of CUs</h3>
                         <select name="cu_num">
-                            <option value="single"> single </option>
                             <option value="multi"> multi</option>
+                            <option value="single"> single </option>
                         </select>
                     </div>
                     <div class="section select">
                         <h3>Memory type</h3>
                         <select name="mem">
-                            <option value="gm"> Remain unchanged </option>
+                            <option value="gm"> Remain unchanged (Default) </option>
                             <option value="fgm"> Force in/out to GSM </option>
                         </select>
                     </div>
@@ -48,10 +48,24 @@
                         </select>
                     </div>
                     <div class="section select">
+                        <h3>Invalidate ICache</h3>
+                        <select name="invalidate_icache">
+                            <option value="1"> Invalidate ICache (Default) </option>
+                            <option value="0"> No invalidate ICache </option>
+                        </select>
+                    </div>
+                    <div class="section select">
+                        <h3>Compiler initializing registers</h3>
+                        <select name="init_reg">
+                            <option value="0"> Not initialize (Default) </option>
+                            <option value="1"> Initialize </option>
+                        </select>
+                    </div>
+                    <div class="section select">
                         <h3>Probe</h3>
                         <select name="probe">
-                            <option value="On"> On </option>
-                            <option value="Off"> Off </option>
+                            <option value="Off"> Off (Default) </option>
+                            <option value="On"> On (For HW verification)</option>
                         </select>
                     </div>
                     <div class="section check" id="nonConformanceSection">
