@@ -15,8 +15,8 @@ body {
     border: none !important;
     box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
 }
-.card .btn-warning {
-    color: #fff;
+.card .btn-outline-info {
+    /*color: #fff;*/
     margin-bottom: 10px; 
 }
 .card .btn-warning:hover {
@@ -32,6 +32,12 @@ body {
     background-color: #155b62;
     color: #fff;
 }
-footer {
+footer, .submit {
     text-align: center;
+}
+.alert {
+    z-index: 1;
+    box-sizing: unset;
+    position: fixed !important;
+    top: 5px;
 }
