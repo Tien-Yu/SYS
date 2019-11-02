@@ -11,24 +11,24 @@ body {
     text-align: center;
     margin: 30px auto 30px;
 }
-.card {
+#form-container .card {
     border: none !important;
     box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
 }
-.card .btn-outline-info {
+#form-container .card .btn-outline-info {
     /*color: #fff;*/
     margin-bottom: 10px; 
 }
-.card .btn-warning:hover {
+#form-container .card .btn-warning:hover {
     color: #fff;
 }
-.card .btn-warning:not(:disabled):not(.disabled):active {
+#form-container .card .btn-warning:not(:disabled):not(.disabled):active {
     color: #fff;
 }
-.card .btn-info:not(:disabled):not(.disabled):active:focus {
+#form-container .card .btn-info:not(:disabled):not(.disabled):active:focus {
     color: #fff;
 }
-.card .card-header {
+#form-container .card .card-header {
     background-color: #155b62;
     color: #fff;
 }
@@ -40,4 +40,17 @@ footer, .submit {
     box-sizing: unset;
     position: fixed !important;
     top: 5px;
+}
+
+#message-container .card {
+    border: 1px solid #17a2b8;
+    border-radius: 5px;
+}
+
+#message-helper {
+    text-align: center;
+}
+
+#message-helper img {
+    max-height: 80px;
 }
