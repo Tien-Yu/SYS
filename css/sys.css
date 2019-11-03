@@ -54,3 +54,80 @@ footer, .submit {
 #message-helper img {
     max-height: 80px;
 }
+
+/*modal*/
+#exampleModalScrollable label {
+    display: block;
+    white-space: nowrap;
+}
+
+
+
+
+
+/* Popup container */
+.popup {
+    color: #c19311;
+    font-weight: bold;
+    position: relative;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* The actual popup */
+#popupNonCon .popupText, #popupCon .popupText {
+    visibility: hidden;
+    width: 160px;
+    background-color: #555;
+    color: #fff;
+    border-radius: 6px;
+    padding: 8px 0 8px 15px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -80px;
+}
+
+/* Popup arrow */
+.popup .popupText::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+}
+
+/* Toggle this class - hide and show the popup */
+#popupNonCon .show, #popupCon .show {
+    visibility: visible;
+    -webkit-animation: fadeIn 0.3s;
+    animation: fadeIn 0.3s;
+}
+
+/* Add animation (fade in the popup) */
+@-webkit-keyframes fadeIn {
+    from {opacity: 0;} 
+    to {opacity: 1;}
+}
+
+@keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity:1 ;}
+}
+
+
+
+
+
+
+
+.aaa {
+    color: red;
+}

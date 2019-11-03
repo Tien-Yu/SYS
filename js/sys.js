@@ -32,8 +32,10 @@ $( document ).ready(function() {
     });
 
     // List options in dialog
-    listOptions("data/group_non_conformance.json", "non_options", "nonConformance", "selectAllNonId");
-    listOptions("data/group_conformance.json", "options", "conformance", "selectAllId");
+    // listOptions("data/group_non_conformance.json", "non_options", "nonConformance", "selectAllNonId");
+    // listOptions("data/group_conformance.json", "options", "conformance", "selectAllId");
+
+    listItems("data/all_items.json");
 });
 
 // Prevent being directed to new page, and change message
@@ -59,12 +61,6 @@ $('#form-container').on('submit', function(event) {
 
             // insert into message box
             $("#message").html(str);
-
-            // animation
-            $("#message").css({"animation": "pulse 3s infinite"});
-            setTimeout(function(){ $("#message").css({"animation": "none", "box-shadow": "none"}); }, 3000);
-            $("#submitBtn").css({"animation": "pulseBtn 1.5s infinite"});
-            setTimeout(function(){ $("#submitBtn").css({"animation": "none", "box-shadow": "none"}); }, 1500);
         },
         error: function (jXHR, textStatus, errorThrown) {
             console.log(errorThrown);
@@ -74,12 +70,9 @@ $('#form-container').on('submit', function(event) {
 
 //Reset
 $("#resetBtn").click(function (e) {
-    document.getElementById("container").reset();
+    document.getElementById("form-container").reset();
     $("#showSelectedNon").val("");
     $("#showSelected").val("");
-    // feedback animation
-    $(this).css({"animation": "pulseBtn 1.5s infinite"});
-    setTimeout(function(){ $("#resetBtn").css({"animation": "none", "box-shadow": "none"}); }, 1500);
 });
 
 // "Select all" buttons in two dialogs
@@ -132,83 +125,102 @@ $("#showSelected").resizable({
     }
 });
 
-// Open dialog
-$("#nonConformanceBtn").click(function (e) {
-    initializeDialog("#nonConformanceDialog", "nonConformance", "#showSelectedNon", inputManuallyNon);  
-});
-$("#conformanceBtn").click(function (e) {
-    initializeDialog("#conformanceDialog","conformance", "#showSelected", inputManually);
-});
-
-function initializeDialog(dialogId, checkboxName, showAreaId, manualInput) {
-    $( dialogId ).dialog({
-        width: "auto",
-        height: 700,
-        fluid: true, //new option
-        buttons: {
-            "Ok": function() {
-                var replace = true;
-                if (manualInput) {
-                    var answer = confirm("Do you want to replace the original ones?")
-                    if (!answer) {
-                        replace = false;
-                    }
-                }
-                if(replace) {                    
-                    // show selected items in textarea
-                    var str="";
-                    var checked = document.querySelectorAll("input[name='"+checkboxName+"']:checked");
-                    for (var i = 0; i < checked.length; i++) {
-                        str += (i == checked.length-1) ? checked[i].value : (checked[i].value + "\n");
-                    }
-                    $(showAreaId).val(str);
-                    // close dialog
-                    $(this).dialog("close");
-                }
-            },
-            "Cancel": function() {
-                $(this).dialog("close");
-            }
-        },
-        position: {
-            at: "center center"
-        }
-    });
-}
-
-function listOptions(file, id, name, selectAll) {
+// [Bootstrap] list items
+function listItems(file) {
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.open("GET", file, true);
     xmlhttp.send();
     xmlhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             var myObj = JSON.parse(this.responseText);
-            // Insert elements to tables. Elements order: [1 4; 2 5; 3 6;]
-            for (var k=0; k<myObj.length; k++){
-                if(k < myObj.length/2) {
-                    var table = document.getElementById(id+"1");
-                    var row = table.insertRow(k);
-                    var cell = row.insertCell(0);
-                }
-                else {
-                    var table = document.getElementById(id+"2");
-                    var row = table.insertRow(k-Math.floor(myObj.length/2)-1);
-                    var cell = row.insertCell(0);
-                }
-                cell.innerHTML = "<label><input type='checkbox' class='" + name + "' name='" + name + "' value='" + myObj[k] + "'/>" + myObj[k] + "</label>"; 
+            // var columnLength = Math.ceil(myObj.length / 2);
+            var itemStr = "";
+            for (var k=0; k<myObj.length; k++) {
+                itemStr += "<label><input type='checkbox' class='" + name + "' name='" + name + "' value='" + myObj[k] + "'/>" + myObj[k] + "</label>";
             }
+            $("#items").html(itemStr);
 
-            // When "Select all" is checked, if any of options is changed to unckecked, unchecked "Select all".
-            $("input:checkbox[name='" + name + "']").change(function() {
-                if ($("#"+selectAll).prop("checked") == true) {
-                    $("input:checkbox[name='" + name + "']").each(function() {  
-                        if($(this).prop("checked") == false) {  
-                            $("#"+selectAll).removeAttr("checked");
-                            return false;
-                        }
-                    }); 
-                }
-            });
         }
-    }; 
+    }
 }
+
+// // Open dialog
+// $("#nonConformanceBtn").click(function (e) {
+//     initializeDialog("#nonConformanceDialog", "nonConformance", "#showSelectedNon", inputManuallyNon);  
+// });
+// $("#conformanceBtn").click(function (e) {
+//     initializeDialog("#conformanceDialog","conformance", "#showSelected", inputManually);
+// });
+
+// function initializeDialog(dialogId, checkboxName, showAreaId, manualInput) {
+//     $( dialogId ).dialog({
+//         width: "auto",
+//         height: 700,
+//         fluid: true, //new option
+//         buttons: {
+//             "Ok": function() {
+//                 var replace = true;
+//                 if (manualInput) {
+//                     var answer = confirm("Do you want to replace the original ones?")
+//                     if (!answer) {
+//                         replace = false;
+//                     }
+//                 }
+//                 if(replace) {                    
+//                     // show selected items in textarea
+//                     var str="";
+//                     var checked = document.querySelectorAll("input[name='"+checkboxName+"']:checked");
+//                     for (var i = 0; i < checked.length; i++) {
+//                         str += (i == checked.length-1) ? checked[i].value : (checked[i].value + "\n");
+//                     }
+//                     $(showAreaId).val(str);
+//                     // close dialog
+//                     $(this).dialog("close");
+//                 }
+//             },
+//             "Cancel": function() {
+//                 $(this).dialog("close");
+//             }
+//         },
+//         position: {
+//             at: "center center"
+//         }
+//     });
+// }
+
+// function listOptions(file, id, name, selectAll) {
+//     var xmlhttp = new XMLHttpRequest();
+//     xmlhttp.open("GET", file, true);
+//     xmlhttp.send();
+//     xmlhttp.onreadystatechange = function() {
+//         if (this.readyState == 4 && this.status == 200) {
+//             var myObj = JSON.parse(this.responseText);
+//             // Insert elements to tables. Elements order: [1 4; 2 5; 3 6;]
+//             for (var k=0; k<myObj.length; k++){
+//                 if(k < myObj.length/2) {
+//                     var table = document.getElementById(id+"1");
+//                     var row = table.insertRow(k);
+//                     var cell = row.insertCell(0);
+//                 }
+//                 else {
+//                     var table = document.getElementById(id+"2");
+//                     var row = table.insertRow(k-Math.floor(myObj.length/2)-1);
+//                     var cell = row.insertCell(0);
+//                 }
+//                 cell.innerHTML = "<label><input type='checkbox' class='" + name + "' name='" + name + "' value='" + myObj[k] + "'/>" + myObj[k] + "</label>"; 
+//             }
+
+//             // When "Select all" is checked, if any of options is changed to unckecked, unchecked "Select all".
+//             $("input:checkbox[name='" + name + "']").change(function() {
+//                 if ($("#"+selectAll).prop("checked") == true) {
+//                     $("input:checkbox[name='" + name + "']").each(function() {  
+//                         if($(this).prop("checked") == false) {  
+//                             $("#"+selectAll).removeAttr("checked");
+//                             return false;
+//                         }
+//                     }); 
+//                 }
+//             });
+//         }
+//     }; 
+// }
