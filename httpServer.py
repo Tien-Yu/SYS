@@ -203,7 +203,7 @@ class SYSServer():
         server.serve_forever()
 
     def createChild(self, simType, cuNum, mem, parallel, probe, patternType, patternList, clientIP):
-        if isDevMode():
+        if util.isDevMode():
             return True
         regressPath = self.dispatchRegressionWorkspace()
         if regressPath == -1:
