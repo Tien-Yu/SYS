@@ -41,13 +41,13 @@
                     </div>
                 </div>
             </div>
-            <form id="form-container">
+            <form id="form-container" action="/">
                 <div class="row">
                     <div class="col-lg-4 col-md-6 mb-4">
                         <div class="card">
                             <h5 class="card-header">Simulation type</h5>
                             <div class="card-body">
-                                <select class="form-control">
+                                <select name="sim" class="form-control">
                                     <option value="cu_sim"> CU-sim </option>
                                     <option value="global_sim"> Global-sim</option>
                                     <option value="d_sim"> D-sim</option>
@@ -61,7 +61,7 @@
                         <div class="card">
                             <h5 class="card-header">Number of CUs</h5>
                             <div class="card-body">
-                                <select class="form-control">
+                                <select name="cu_num" class="form-control">
                                     <option value="multi"> multi</option>
                                     <option value="single"> single </option>
                                 </select>
@@ -72,7 +72,7 @@
                         <div class="card">
                             <h5 class="card-header">Memory type</h5>
                             <div class="card-body">
-                                <select class="form-control">
+                                <select name="mem" class="form-control">
                                     <option value="gm"> Remain unchanged (Default) </option>
                                     <option value="fgm"> Force in/out to GSM </option>
                                 </select>
@@ -83,7 +83,7 @@
                         <div class="card">
                             <h5 class="card-header">Sequential option</h5>
                             <div class="card-body">
-                                <select class="form-control">
+                                <select name="parallel" class="form-control">
                                     <option value="1"> Not sequential (Default) </option>
                                     <option value="0"> Sequential </option>
                                 </select>
@@ -94,7 +94,7 @@
                         <div class="card">
                             <h5 class="card-header">Invalidate ICache</h5>
                             <div class="card-body">
-                                <select class="form-control">
+                                <select name="invalidate_icache" class="form-control">
                                     <option value="1"> Invalidate ICache (Default) </option>
                                     <option value="0"> No invalidate ICache </option>
                                 </select>
@@ -108,7 +108,7 @@
                             <h5 class="card-header">Featured</h5>
                             <div class="card-body">
                                 <button type="button" class="btn btn-outline-info btn-sm">Select from list</button>
-                                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                                <textarea name="showSelectedNon" class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
                             </div>
                         </div>
                     </div>
@@ -117,7 +117,7 @@
                             <h5 class="card-header">Featured</h5>
                             <div class="card-body">
                                 <button type="button" class="btn btn-outline-info btn-sm">Select from list</button>
-                                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                                <textarea name="showSelected" class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
                             </div>
                         </div>
                     </div>
