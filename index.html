@@ -21,32 +21,31 @@
             </div> -->
             <h1>MVPU2 Pattern Vending Machine</h1>
             
-            <form>
-                <div id="message-container">
-                    <div class="row">
-                        <div id="message-helper" class="col-lg-2 col-md-2 mb-4">
-                            <img src="./img/message_helper.png"/>
-                        </div>
-                        <div class="col-lg-10 col-md-10 mb-4">
-                            <div class="card">
-                                <div class="card-body">
-                                    Welcome to MVPU Pattern Vending Machine!<br>
-                                    - Welcome to MVPU Pattern Vending Machine!<br>
-                                    - Welcome to MVPU Pattern Vending Machine!<br>
-                                    - Welcome to MVPU Pattern Vending Machine!<br>
-                                    Welcome to MVPU Pattern Vending Machine!<br>
+            
+            <div id="message-container">
+                <div class="row">
+                    <div id="message-helper" class="col-lg-2 col-md-2 mb-4">
+                        <img src="./img/message_helper.png"/>
+                    </div>
+                    <div class="col-lg-10 col-md-10 mb-4">
+                        <div class="card">
+                            <div id="message" class="card-body">
+                                Welcome to MVPU Pattern Vending Machine!<br>
+                                - Welcome to MVPU Pattern Vending Machine!<br>
+                                - Welcome to MVPU Pattern Vending Machine!<br>
+                                - Welcome to MVPU Pattern Vending Machine!<br>
+                                Welcome to MVPU Pattern Vending Machine!<br>
 
-                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                    
-                <div id="form-container">
+            </div>
+            <form id="form-container">
                 <div class="row">
                     <div class="col-lg-4 col-md-6 mb-4">
                         <div class="card">
-                            <h5 class="card-header">Featured</h5>
+                            <h5 class="card-header">Simulation type</h5>
                             <div class="card-body">
                                 <select class="form-control">
                                     <option value="cu_sim"> CU-sim </option>
@@ -60,40 +59,44 @@
                     </div>
                     <div class="col-lg-4 col-md-6 mb-4">
                         <div class="card">
-                            <h5 class="card-header">Featured</h5>
+                            <h5 class="card-header">Number of CUs</h5>
                             <div class="card-body">
                                 <select class="form-control">
-                                  <option>Default select</option>
+                                    <option value="multi"> multi</option>
+                                    <option value="single"> single </option>
                                 </select>
                             </div>
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-6 mb-4">
                         <div class="card">
-                            <h5 class="card-header">Featured</h5>
+                            <h5 class="card-header">Memory type</h5>
                             <div class="card-body">
                                 <select class="form-control">
-                                  <option>Default select</option>
+                                    <option value="gm"> Remain unchanged (Default) </option>
+                                    <option value="fgm"> Force in/out to GSM </option>
                                 </select>
                             </div>
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-6 mb-4">
                         <div class="card">
-                            <h5 class="card-header">Featured</h5>
+                            <h5 class="card-header">Sequential option</h5>
                             <div class="card-body">
                                 <select class="form-control">
-                                  <option>Default select</option>
+                                    <option value="1"> Not sequential (Default) </option>
+                                    <option value="0"> Sequential </option>
                                 </select>
                             </div>
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-6 mb-4">
                         <div class="card">
-                            <h5 class="card-header">Featured</h5>
+                            <h5 class="card-header">Invalidate ICache</h5>
                             <div class="card-body">
                                 <select class="form-control">
-                                  <option>Default select</option>
+                                    <option value="1"> Invalidate ICache (Default) </option>
+                                    <option value="0"> No invalidate ICache </option>
                                 </select>
                             </div>
                         </div>
@@ -120,16 +123,15 @@
                     </div>
                 </div>
                 <div class="row submit">
-                    <div class="col-lg-12 col-md-12 mb-4">
+                    <!-- <div class="col-lg-12 col-md-12 mb-4"> -->
                         <button class="btn btn-dark ml-2"> Start </button>
                         <button type="button" class="btn btn-secondary ml-2"> Reset </button>
-                    </div>
-                </div>
+                    <!-- </div> -->
                 </div>
             </form>
         </div>
 
-        <footer>&copy; Copyright 2018 Tingchu & Tienyu</footer>
+        <footer>&copy; Copyright 2019 Tingchu & Tienyu</footer>
 
         <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>

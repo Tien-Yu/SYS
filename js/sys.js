@@ -8,7 +8,7 @@ $( document ).ready(function() {
         data: $(this).serialize(),
         success: function (data) {
             // For testing without server messages
-            //data='{"0": {"0": "SYS received your job, ID: ", "1": "<strong>4", "2": "</strong>."}, "1": {"0": "Patterns processed/total : <strong>4 / 14</strong>"}, "2": {"0": "Youll get your patterns in "}, "3": {"0": "<strong>nobackup/d_02168_t2/tingchu02168/20180601_non_conformance_single_4</strong>"}}';
+            // data='{"0": {"0": "SYS received your job, ID: ", "1": "<strong>4", "2": "</strong>."}, "1": {"0": "Patterns processed/total : <strong>4 / 14</strong>"}, "2": {"0": "Youll get your patterns in "}, "3": {"0": "<strong>nobackup/d_02168_t2/tingchu02168/20180601_non_conformance_single_4</strong>"}}';
             
             // parse json to object
             var myObj = JSON.parse(data);
@@ -37,7 +37,7 @@ $( document ).ready(function() {
 });
 
 // Prevent being directed to new page, and change message
-$('#container').on('submit', function(event) {
+$('#form-container').on('submit', function(event) {
     event.preventDefault();
     $.ajax({
         url : $(this).attr('action') || window.location.pathname,
