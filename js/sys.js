@@ -32,11 +32,36 @@ $( document ).ready(function() {
     });
 
     // List options in dialog
-    // listOptions("data/group_non_conformance.json", "non_options", "nonConformance", "selectAllNonId");
-    // listOptions("data/group_conformance.json", "options", "conformance", "selectAllId");
+    var groupList = ["group_conformance", "group_non_conformance"];
+    for(var i = 0; i < groupList.length; i++) {
+        listItems(groupList[i], groupList);
+    }
 
-    listItems("data/all_items.json");
+    // Yes button in select list modal
+    $("#save").on('click', function() {
+        if ($("#showSelected").val() != "") {
+            $('#modalConfirm').modal('show');
+        } else {
+            showCheckedItems();
+        }
+    });
+
+    // Yes button in confirm modal
+    $("#confirm").on('click', function() {
+        showCheckedItems();
+    });
+
 });
+
+function showCheckedItems() {
+    var checkedItems = $("#itemList input:checked");
+    var itemStr = "";
+    for (var i=0; i<checkedItems.length; i++) {
+        itemStr += checkedItems[i].value + "\n";
+    }
+    $("#showSelected").val(itemStr);
+    $("#showSelected").html(itemStr);
+}
 
 // Prevent being directed to new page, and change message
 $('#form-container').on('submit', function(event) {
@@ -71,23 +96,17 @@ $('#form-container').on('submit', function(event) {
 //Reset
 $("#resetBtn").click(function (e) {
     document.getElementById("form-container").reset();
-    $("#showSelectedNon").val("");
     $("#showSelected").val("");
 });
 
-// "Select all" buttons in two dialogs
-$("#selectAllNonId").change(function() {
-   if($("#selectAllNonId").prop("checked")) {
-        $("input[name='nonConformance']").prop("checked", true); // select all
+// "Select all" button on change
+$("#selectAll").change(function() {
+   if($(this).prop("checked")) {
+        $("#groupSelector input").prop("checked", true);
+        $("#itemList input").prop("checked", true);
    } else {
-        $("input[name='nonConformance']").prop("checked", false); // unselect all       
-   }
-});
-$("#selectAllId").change(function() {
-   if($("#selectAllId").prop("checked")) {
-        $("input[name='conformance']").prop("checked", true);
-   } else {
-        $("input[name='conformance']").prop("checked", false);          
+        $("#groupSelector input").prop("checked", false);
+        $("#itemList input").prop("checked", false);      
    }
 });
 
@@ -96,39 +115,17 @@ $("#popupNonCon").on('click mouseover', function () {
     var popup = document.getElementById("inputFormatNonCon");
     popup.classList.toggle("show");
 });
-$("#popupCon").on('click mouseover', function () {
-    var popup = document.getElementById("inputFormatCon");
-    popup.classList.toggle("show");
-});
 
 // Check if user input something in textarea manually
 var inputManuallyNon = false;
-var inputManually = false;
-$("#showSelectedNon").on('input', function () {
-    inputManuallyNon = true
-});
 $("#showSelected").on('input', function () {
-    inputManually = true
-});
-
-//
-$("#showSelectedNon").resizable({
-    handles: 's',
-    resize: function() {
-        $("#nonConformanceSection").height($("#showSelectedNon").height()+140);
-    }
-});
-$("#showSelected").resizable({
-    handles: 's',
-    resize: function() {
-        $("#conformanceSection").height($("#showSelected").height()+140);
-    }
+    inputManuallyNon = true
 });
 
 // [Bootstrap] list items
-function listItems(file) {
+function listItems(groupName, groupList) {
     var xmlhttp = new XMLHttpRequest();
-    xmlhttp.open("GET", file, true);
+    xmlhttp.open("GET", "data/" + groupName + ".json", true);
     xmlhttp.send();
     xmlhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
@@ -136,57 +133,58 @@ function listItems(file) {
             // var columnLength = Math.ceil(myObj.length / 2);
             var itemStr = "";
             for (var k=0; k<myObj.length; k++) {
-                itemStr += "<label><input type='checkbox' class='" + name + "' name='" + name + "' value='" + myObj[k] + "'/>" + myObj[k] + "</label>";
+                itemStr += "<label><input type='checkbox' class='" + groupName + "' value='" + myObj[k] + "'/>" + myObj[k] + "</label>";
             }
-            $("#items").html(itemStr);
 
+            var groupContentId = groupName + "_content";
+            var groupContent = "<div id='" + groupContentId + "'>" + itemStr + "</div>";
+            $("#itemList").append(groupContent);
+
+            // add group select all checkbox
+            var groupSelectorId = groupName + "SelectAll";
+            $("#groupSelector").append("<label><input type='checkbox' id='" + groupSelectorId + "'/><b>" + groupName + "</b></label>");
+            
+            // Handle check events
+            handleItemsCheckEvent(groupName, groupList, groupSelectorId);
         }
     }
 }
 
-// // Open dialog
-// $("#nonConformanceBtn").click(function (e) {
-//     initializeDialog("#nonConformanceDialog", "nonConformance", "#showSelectedNon", inputManuallyNon);  
-// });
-// $("#conformanceBtn").click(function (e) {
-//     initializeDialog("#conformanceDialog","conformance", "#showSelected", inputManually);
-// });
+function handleItemsCheckEvent(groupName, groupList, groupSelectorId) {
+    // group select all button on change
+    $("#" + groupSelectorId).change(function() {
+        if($(this).prop("checked")) {
+            $("input." + groupName).prop("checked", true);
 
-// function initializeDialog(dialogId, checkboxName, showAreaId, manualInput) {
-//     $( dialogId ).dialog({
-//         width: "auto",
-//         height: 700,
-//         fluid: true, //new option
-//         buttons: {
-//             "Ok": function() {
-//                 var replace = true;
-//                 if (manualInput) {
-//                     var answer = confirm("Do you want to replace the original ones?")
-//                     if (!answer) {
-//                         replace = false;
-//                     }
-//                 }
-//                 if(replace) {                    
-//                     // show selected items in textarea
-//                     var str="";
-//                     var checked = document.querySelectorAll("input[name='"+checkboxName+"']:checked");
-//                     for (var i = 0; i < checked.length; i++) {
-//                         str += (i == checked.length-1) ? checked[i].value : (checked[i].value + "\n");
-//                     }
-//                     $(showAreaId).val(str);
-//                     // close dialog
-//                     $(this).dialog("close");
-//                 }
-//             },
-//             "Cancel": function() {
-//                 $(this).dialog("close");
-//             }
-//         },
-//         position: {
-//             at: "center center"
-//         }
-//     });
-// }
+            //if all groups are checked, check "Select all"
+            var all_groups_selected = true;
+            for (var k=0; k<groupList.length; k++) {
+                if (!$("#selectAll").prop("checked")) {
+                    if (groupList[k] != groupName) {
+                        if (!$("#" + groupList[k] + "SelectAll").prop("checked")) {
+                            all_groups_selected = false;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (all_groups_selected) {
+                $("#selectAll").prop("checked", true);
+            }
+        } else {
+            $("input." + groupName).prop("checked", false); 
+            $("#selectAll").prop("checked", false);      
+        }
+    });
+
+    // uncheck "group select all" if one of the group items is unchecked
+    $("." + groupName).change(function() {
+        if(!$(this).prop("checked")) {
+            $("#" + groupSelectorId).prop("checked", false);
+            $("#selectAll").prop("checked", false); 
+        }
+    });
+}
 
 // function listOptions(file, id, name, selectAll) {
 //     var xmlhttp = new XMLHttpRequest();
