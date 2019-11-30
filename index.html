@@ -42,20 +42,20 @@
                             <h5 class="card-header">Simulation type</h5>
                             <div class="card-body">
                                 <select name="sim" class="form-control">
-                                    <option value="cu_sim"> CU-sim </option>
-                                    <option value="global_sim"> Global-sim</option>
-                                    <option value="d_sim"> D-sim</option>
-                                    <option value="fpga"> FPGA </option>
-                                    <option value="dbg_info"> Debug info </option>
+                                    <option value="ip_sim"> IP-sim </option>
+                                    <option value="global_sim" disabled> Global-sim</option>
+                                    <option value="d_sim" disabled> D-sim</option>
+                                    <option value="fpga" disabled> FPGA </option>
+                                    <option value="dbg_info" disabled> Debug info </option>
                                 </select>
                             </div>
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-6 mb-4">
                         <div class="card">
-                            <h5 class="card-header">Number of CUs</h5>
+                            <h5 class="card-header">Number of MVPUs</h5>
                             <div class="card-body">
-                                <select name="cu_num" class="form-control">
+                                <select name="mvpu_num" class="form-control">
                                     <option value="multi"> multi</option>
                                     <option value="single"> single </option>
                                 </select>
