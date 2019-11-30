@@ -1,9 +1,5 @@
 body {
-    /*background: url('../img/MediaTek.png') no-repeat;*/
-    /*background-size: auto;*/
     background-color: #e8e8e8!important;
-    /*background-position: center;*/
-    /*background-attachment: fixed;*/
     font-family: "HelveticaNeue","Helvetica","Arial";
 }
 .container h1 {
@@ -16,7 +12,6 @@ body {
     box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
 }
 #form-container .card .btn-outline-info {
-    /*color: #fff;*/
     margin-bottom: 10px; 
 }
 #form-container .card .btn-warning:hover {
@@ -60,9 +55,6 @@ footer, .submit {
     display: block;
     white-space: nowrap;
 }
-
-
-
 
 
 /* Popup container */
@@ -120,14 +112,4 @@ footer, .submit {
 @keyframes fadeIn {
     from {opacity: 0;}
     to {opacity:1 ;}
-}
-
-
-
-
-
-
-
-.aaa {
-    color: red;
 }

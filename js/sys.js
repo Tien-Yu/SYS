@@ -116,12 +116,6 @@ $("#popupNonCon").on('click mouseover', function () {
     popup.classList.toggle("show");
 });
 
-// Check if user input something in textarea manually
-var inputManuallyNon = false;
-$("#showSelected").on('input', function () {
-    inputManuallyNon = true
-});
-
 // [Bootstrap] list items
 function listItems(groupName, groupList) {
     var xmlhttp = new XMLHttpRequest();
@@ -185,40 +179,3 @@ function handleItemsCheckEvent(groupName, groupList, groupSelectorId) {
         }
     });
 }
-
-// function listOptions(file, id, name, selectAll) {
-//     var xmlhttp = new XMLHttpRequest();
-//     xmlhttp.open("GET", file, true);
-//     xmlhttp.send();
-//     xmlhttp.onreadystatechange = function() {
-//         if (this.readyState == 4 && this.status == 200) {
-//             var myObj = JSON.parse(this.responseText);
-//             // Insert elements to tables. Elements order: [1 4; 2 5; 3 6;]
-//             for (var k=0; k<myObj.length; k++){
-//                 if(k < myObj.length/2) {
-//                     var table = document.getElementById(id+"1");
-//                     var row = table.insertRow(k);
-//                     var cell = row.insertCell(0);
-//                 }
-//                 else {
-//                     var table = document.getElementById(id+"2");
-//                     var row = table.insertRow(k-Math.floor(myObj.length/2)-1);
-//                     var cell = row.insertCell(0);
-//                 }
-//                 cell.innerHTML = "<label><input type='checkbox' class='" + name + "' name='" + name + "' value='" + myObj[k] + "'/>" + myObj[k] + "</label>"; 
-//             }
-
-//             // When "Select all" is checked, if any of options is changed to unckecked, unchecked "Select all".
-//             $("input:checkbox[name='" + name + "']").change(function() {
-//                 if ($("#"+selectAll).prop("checked") == true) {
-//                     $("input:checkbox[name='" + name + "']").each(function() {  
-//                         if($(this).prop("checked") == false) {  
-//                             $("#"+selectAll).removeAttr("checked");
-//                             return false;
-//                         }
-//                     }); 
-//                 }
-//             });
-//         }
-//     }; 
-// }
