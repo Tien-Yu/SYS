@@ -116,7 +116,8 @@ $("#popupNonCon").on('click mouseover', function () {
     popup.classList.toggle("show");
 });
 
-// [Bootstrap] list items
+// list items
+var allItemsMap = [];
 function listItems(groupName, groupList) {
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.open("GET", "data/" + groupName + ".json", true);
@@ -124,15 +125,32 @@ function listItems(groupName, groupList) {
     xmlhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             var myObj = JSON.parse(this.responseText);
-            // var columnLength = Math.ceil(myObj.length / 2);
             var itemStr = "";
+            
+            // store item in allItemsMap (Object) with item name and item class
+            // class is an array (classArray)
+            // each item is unique. If it is already in allItemsMap, the only thing we do is adding a new class.
             for (var k=0; k<myObj.length; k++) {
-                itemStr += "<label><input type='checkbox' class='" + groupName + "' value='" + myObj[k] + "'/>" + myObj[k] + "</label>";
+                var item = myObj[k];
+                
+                if (item in allItemsMap) {
+                    var classArray = allItemsMap[item];
+                    classArray.push(groupName);
+                    allItemsMap[item] = classArray;
+                } else {
+                    allItemsMap[item] = [groupName];
+                }
+            }
+            
+            // allItemsList is all item names. (Array)
+            var allItemsList = Object.keys(allItemsMap);
+
+            for (var k=0; k<allItemsList.length; k++) {
+                var itemClass = allItemsMap[allItemsList[k]].toString().replace(",", " ");
+                itemStr += "<label><input type='checkbox' class='" + itemClass + "' value='" + allItemsList[k] + "'/>" + allItemsList[k] + "</label>";
             }
 
-            var groupContentId = groupName + "_content";
-            var groupContent = "<div id='" + groupContentId + "'>" + itemStr + "</div>";
-            $("#itemList").append(groupContent);
+            $("#itemList").html(itemStr);
 
             // add group select all checkbox
             var groupSelectorId = groupName + "SelectAll";

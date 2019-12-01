@@ -30,11 +30,9 @@ body {
 footer, .submit {
     text-align: center;
 }
-.alert {
-    z-index: 1;
-    box-sizing: unset;
-    position: fixed !important;
-    top: 5px;
+
+input[type=checkbox] {
+    margin-right: 8px;
 }
 
 #message-container .card {
