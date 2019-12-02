@@ -1,6 +1,4 @@
 $( document ).ready(function() {
-    $(".ui-wrapper").css('padding-bottom','').css('padding-right','').css('height','').css('width','');
-    $("#showSelectedNon").css('height','').css('width','100%');
     // get message on document ready
     $.ajax({
         url : "/js/message" || window.location.pathname,
@@ -16,8 +14,8 @@ $( document ).ready(function() {
             //parse object to array
             var text = Object.keys(myObj).map(function (key) { return myObj[key]; });
             var str = "";
-            for(var i = 0; i < text.length; i++) {
-                if(Object.keys(text[i]).length !== 0) {
+            for (var i = 0; i < text.length; i++) {
+                if (Object.keys(text[i]).length !== 0) {
                     text[i] = Object.keys(text[i]).map(function (key) { return text[i][key]; });
                     str += "<li>"+text[i].join("") + "</li>";
                 }
@@ -33,7 +31,7 @@ $( document ).ready(function() {
 
     // List options in dialog
     var groupList = ["group_conformance", "group_non_conformance"];
-    for(var i = 0; i < groupList.length; i++) {
+    for (var i = 0; i < groupList.length; i++) {
         listItems(groupList[i], groupList);
     }
 
@@ -56,7 +54,7 @@ $( document ).ready(function() {
 function showCheckedItems() {
     var checkedItems = $("#itemList input:checked");
     var itemStr = "";
-    for (var i=0; i<checkedItems.length; i++) {
+    for (var i = 0; i < checkedItems.length; i++) {
         itemStr += checkedItems[i].value + "\n";
     }
     $("#showSelected").val(itemStr);
@@ -77,10 +75,10 @@ $('#form-container').on('submit', function(event) {
             //parse object to array
             var text = Object.keys(myObj).map(function (key) { return myObj[key]; });
             var str = "";
-            for(var i = 0; i < text.length; i++) {
-                if(Object.keys(text[i]).length !== 0) {
+            for (var i = 0; i < text.length; i++) {
+                if (Object.keys(text[i]).length !== 0) {
                     text[i] = Object.keys(text[i]).map(function (key) { return text[i][key]; });
-                    str += "<li>"+text[i].join("")+"</li>";
+                    str += "<li>" + text[i].join("") + "</li>";
                 }
             }
 
@@ -101,7 +99,7 @@ $("#resetBtn").click(function (e) {
 
 // "Select all" button on change
 $("#selectAll").change(function() {
-   if($(this).prop("checked")) {
+   if ($(this).prop("checked")) {
         $("#groupSelector input").prop("checked", true);
         $("#itemList input").prop("checked", true);
    } else {
@@ -130,7 +128,7 @@ function listItems(groupName, groupList) {
             // store item in allItemsMap (Object) with item name and item class
             // class is an array (classArray)
             // each item is unique. If it is already in allItemsMap, the only thing we do is adding a new class.
-            for (var k=0; k<myObj.length; k++) {
+            for (var k = 0; k < myObj.length; k++) {
                 var item = myObj[k];
                 
                 if (item in allItemsMap) {
@@ -145,7 +143,7 @@ function listItems(groupName, groupList) {
             // allItemsList is all item names. (Array)
             var allItemsList = Object.keys(allItemsMap);
 
-            for (var k=0; k<allItemsList.length; k++) {
+            for (var k = 0; k < allItemsList.length; k++) {
                 var itemClass = allItemsMap[allItemsList[k]].toString().replace(",", " ");
                 itemStr += "<label><input type='checkbox' class='" + itemClass + "' value='" + allItemsList[k] + "'/>" + allItemsList[k] + "</label>";
             }
@@ -165,12 +163,12 @@ function listItems(groupName, groupList) {
 function handleItemsCheckEvent(groupName, groupList, groupSelectorId) {
     // group select all button on change
     $("#" + groupSelectorId).change(function() {
-        if($(this).prop("checked")) {
+        if ($(this).prop("checked")) {
             $("input." + groupName).prop("checked", true);
 
             //if all groups are checked, check "Select all"
             var all_groups_selected = true;
-            for (var k=0; k<groupList.length; k++) {
+            for (var k = 0; k < groupList.length; k++) {
                 if (!$("#selectAll").prop("checked")) {
                     if (groupList[k] != groupName) {
                         if (!$("#" + groupList[k] + "SelectAll").prop("checked")) {
@@ -191,7 +189,7 @@ function handleItemsCheckEvent(groupName, groupList, groupSelectorId) {
 
     // uncheck "group select all" if one of the group items is unchecked
     $("." + groupName).change(function() {
-        if(!$(this).prop("checked")) {
+        if (!$(this).prop("checked")) {
             $("#" + groupSelectorId).prop("checked", false);
             $("#selectAll").prop("checked", false); 
         }
